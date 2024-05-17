@@ -1,0 +1,82 @@
+@media print, screen and (min-width: 980px) {
+#page {
+    width: 960px;
+    margin: 0 auto;
+    background-color: #FFF
+}
+
+/*タイトルなどの強調文字*/
+.main{
+    text-align: center;
+    font-size: 40px;
+}
+
+/*説明などの普通の文字*/
+.section{
+    text-align: center;
+    font-size: 24px;
+}
+
+/*パネルにする*/
+.panel{
+    border-top-style: solid;
+    border-top-width: 1px;
+    border-right-style: solid;
+    border-right-width: 1px;
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    border-left-style: solid;
+    border-left-width: 1px;
+    border-image-source: initial;
+    border-image-slice: initial;
+    border-image-width: initial;
+    border-image-outset: initial;
+    border-image-repeat: initial;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+    border-bottom-left-radius: 4px;
+    box-shadow: 0 1px 1px rgb(0 0 0 / 5%);
+    
+    border-top-color: rgb(221, 221, 221);
+    border-right-color: rgb(221, 221, 221);
+    border-bottom-color: rgb(221, 221, 221);
+    border-left-color: rgb(221, 221, 221);
+    
+    background-image: initial;
+    background-position-x: initial;
+    background-position-y: initial;
+    background-size: initial;
+    background-repeat-x: initial;
+    background-repeat-y: initial;
+    background-attachment: initial;
+    background-origin: initial;
+    background-clip: initial;
+    background-color: rgb(238, 238, 238);
+}
+
+
+/*ページタイトル*/
+#title{
+    padding: 0;
+    margin: 0;
+    padding-top: 0px;
+    border-bottom: solid 1px #349FA6;
+}
+
+
+/*ボタン*/
+#button{
+    padding-top: 20px;
+}
+
+/*線を下げる*/
+#down{
+    padding-top: 10px;
+}
+
+/*線を引く*/
+#border{
+    border-top: solid 1px #349FA6;
+}
+}

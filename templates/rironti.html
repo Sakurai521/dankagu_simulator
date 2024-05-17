@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="utf-8">
+    <title>ダンカグ理論値シミュレーター</title>
+    <meta name="description" content="東方ダンマクカグラのスコアの理論値を計算できます">
+    <link rel="stylesheet" media="(min-width: 980px)" href="{{ url_for('static',filename='css/style_pc.css') }}">
+    <link rel="stylesheet" media="(max-width: 980px)" href="{{ url_for('static',filename='css/style_mobile.css') }}">
+</head>
+
+<body id="page">
+    <!--タイトルと説明-->
+    <div id = "title">
+        <h1 class="main">ダンカグ理論値シミュレーター</h1>
+        <h2 class = "section">選択した楽曲の理論値スコアと</br>最適ミタマバースト位置（コンボ）を計算します</br>最後まで新曲、新エフェクトなどの新要素に対応します！</h2> 
+    </div>
+
+    <!--楽曲, カグラエフェクト, ミタマバースト, 総戦力の入力-->
+    <form method="post" action="{{ url_for('index')}}">
+        <!--楽曲-->
+        <div>
+            <p class="panel">楽曲（Danmakuステージは各属性とは別に分かれてます）</p>
+            <select name="Music" id="Music">
+                <option value='曲を選択'>曲を選択</option>
+                <optgroup label="All">
+                    <option value='All:1'{% if music=='All:1' %} selected {% endif %}>幻想に咲いた花</option>
+                    <option value='All:16'{% if music=='All:16' %} selected {% endif %}>幻想に咲いた花（Ura Kagura）</option>
+                    <option value='All:2'{% if music=='All:2' %} selected {% endif %}>幽霊楽団 ～ Phantom Ensemble</option>
+                    <option value='All:17'{% if music=='All:17' %} selected {% endif %}>幽霊楽団 ～ Phantom Ensemble（Ura Kagura）</option>
+                    <option value='All:3'{% if music=='All:3' %} selected {% endif %}>Bad Apple!! feat.nomico</option>
+                    <option value='All:4'{% if music=='All:4' %} selected {% endif %}>解けないように</option>
+                    <option value='All:5'{% if music=='All:5' %} selected {% endif %}>ハルトマンの妖怪少女</option>>
+                    <option value='All:6'{% if music=='All:6' %} selected {% endif %}>地の色は黄色</option>>
+                    <option value='All:7'{% if music=='All:7' %} selected {% endif %}>ボーダーオブライフ</option>>
+                    <option value='All:8'{% if music=='All:8' %} selected {% endif %}>天衣無縫</option>>
+                    <option value='All:9'{% if music=='All:9' %} selected {% endif %}>幻想症候群</option>>
+                    <option value='All:10'{% if music=='All:10' %} selected {% endif %}>ネイティブフェイス（ダンカグ special ver.）</option>>
+                    <option value='All:11'{% if music=='All:11' %} selected {% endif %}>U.N.オーエンは彼女なのか？</option>>
+                    <option value='All:12'{% if music=='All:12' %} selected {% endif %}>砕月</option>>
+                    <option value='All:13'{% if music=='All:13' %} selected {% endif %}>Resonance　～ 私たらしめるもの</option>>
+                    <option value='All:14'{% if music=='All:14' %} selected {% endif %}>紅楼　～ Eastern Dream...</option>>
+                    <option value='All:15'{% if music=='All:15' %} selected {% endif %}>Bad Apple!! feat.nomico (Tetsuya Komuro Remix)</option>>
+                    <option value='All:18'{% if music=='All:18' %} selected {% endif %}>スカーレット警察のゲットーパトロール24時</option>>
+                    <option value='All:19'{% if music=='All:19' %} selected {% endif %}>月まで届け、不死の煙</option>>
+                    <option value='All:20'{% if music=='All:20' %} selected {% endif %}>ピュアヒューリーズ　～ 心の在処</option>
+                    <option value='All:21'{% if music=='All:21' %} selected {% endif %}>ピュアヒューリーズ　～ 心の在処（Ura Kagura）</option>
+                    <option value='All:22'{% if music=='All:22' %} selected {% endif %}>Re_Unknown X</option>
+                    <option value='All:23'{% if music=='All:23' %} selected {% endif %}>Re_Unknown X（Extra）</option>
+                </optgroup>
+                <optgroup label="Co">
+                    <option value='Co:1'{% if music=='Co:1' %} selected {% endif %}>絡繰りドール</option>
+                    <option value='Co:36'{% if music=='Co:36' %} selected {% endif %}>絡繰りドール（Ura Kagura）</option>
+                    <option value='Co:2'{% if music=='Co:2' %} selected {% endif %}>儚きもの人間</option>
+                    <option value='Co:30'{% if music=='Co:30' %} selected {% endif %}>儚きもの人間（Ura Kagura）</option>
+                    <option value='Co:3'{% if music=='Co:3' %} selected {% endif %}>下克上々</option>
+                    <option value='Co:4'{% if music=='Co:4' %} selected {% endif %}>断罪は遍く人間の元に</option>
+                    <option value='Co:33'{% if music=='Co:33' %} selected {% endif %}>断罪は遍く人間の元に（Ura Kagura)</option>
+                    <option value='Co:5'{% if music=='Co:5' %} selected {% endif %}>POKER FACE</option>
+                    <option value='Co:27'{% if music=='Co:27' %} selected {% endif %}>POKER FACE（Ura Kagura）</option>
+                    <option value='Co:6'{% if music=='Co:6' %} selected {% endif %}>Scream Out!</option>
+                    <option value='Co:23'{% if music=='Co:23' %} selected {% endif %}>Scream Out!（Ura Kagura）</option>
+                    <option value='Co:7'{% if music=='Co:7' %} selected {% endif %}>ナイト・オブ・ナイツ</option>
+                    <option value='Co:8'{% if music=='Co:8' %} selected {% endif %}>Paranoia</option>
+                    <option value='Co:24'{% if music=='Co:24' %} selected {% endif %}>Paranoia（Ura Kagura）</option>
+                    <option value='Co:9'{% if music=='Co:9' %} selected {% endif %}>SACRIFICE</option>
+                    <option value='Co:45'{% if music=='Co:45' %} selected {% endif %}>SACRIFICE（Ura Kagura）</option>
+                    <option value='Co:10'{% if music=='Co:10' %} selected {% endif %}>ソリッド</option>
+                    <option value='Co:11'{% if music=='Co:11' %} selected {% endif %}>無生命サーフェス</option>
+                    <option value='Co:37'{% if music=='Co:37' %} selected {% endif %}>無生命サーフェス（Ura Kagura）</option>
+                    <option value='Co:12'{% if music=='Co:12' %} selected {% endif %}>far away</option>
+                    <option value='Co:13'{% if music=='Co:13' %} selected {% endif %}>聖徳伝説　～ True Administrator（深秘録Version）</option>
+                    <option value='Co:14'{% if music=='Co:14' %} selected {% endif %}>Christmas Bomb!!</option>
+                    <option value='Co:15'{% if music=='Co:15' %} selected {% endif %}>エピクロスの虹はもう見えない</option>
+                    <option value='Co:42'{% if music=='Co:42' %} selected {% endif %}>エピクロスの虹はもう見えない（Ura Kagura）</option>
+                    <option value='Co:16'{% if music=='Co:16' %} selected {% endif %}>レイセン・オカルティア [東方深秘録 Re: Arrange]</option>
+                    <option value='Co:17'{% if music=='Co:17' %} selected {% endif %}>あいつはイカサマをしている</option>
+                    <option value='Co:18'{% if music=='Co:18' %} selected {% endif %}>Unprivileged Access</option>
+                    <option value='Co:19'{% if music=='Co:19' %} selected {% endif %}>Starlight Dance Floor (D.M.K. edit)</option>
+                    <option value='Co:20'{% if music=='Co:20' %} selected {% endif %}>ファビュラス</option>
+                    <option value='Co:21'{% if music=='Co:21' %} selected {% endif %}>悪戯センセーション</option>
+                    <option value='Co:22'{% if music=='Co:22' %} selected {% endif %}>Ilias</option>
+                    <option value='Co:25'{% if music=='Co:25' %} selected {% endif %}>さようなら。ありがとう。</option>
+                    <option value='Co:26'{% if music=='Co:26' %} selected {% endif %}>天使の腕試し</option>
+                    <option value='Co:28'{% if music=='Co:28' %} selected {% endif %}>Ayakashi set 14 Another 〜 夜が降りてくる</option>
+                    <option value='Co:29'{% if music=='Co:29' %} selected {% endif %}>Lucent Wish</option>
+                    <option value='Co:31'{% if music=='Co:31' %} selected {% endif %}>Night's Dream (D.M.K. edit)</option>
+                    <option value='Co:32'{% if music=='Co:32' %} selected {% endif %}>パンドラ</option>
+                    <option value='Co:34'{% if music=='Co:34' %} selected {% endif %}>supernatural</option>
+                    <option value='Co:35'{% if music=='Co:35' %} selected {% endif %}>ヒトリシズカ（Marcia Cover Version）</option>
+                    <option value='Co:38'{% if music=='Co:38' %} selected {% endif %}>Hands (feat. AO, らっぷびと)</option>
+                    <option value='Co:39'{% if music=='Co:39' %} selected {% endif %}>Dial Connected</option>
+                    <option value='Co:40'{% if music=='Co:40' %} selected {% endif %}>天狗ノ華</option>
+                    <option value='Co:41'{% if music=='Co:41' %} selected {% endif %}>瞬環フォトグラフィー</option>
+                    <option value='Co:43'{% if music=='Co:43' %} selected {% endif %}>影狼ちゃん月に吠える (Dankagu Edit)</option>
+                    <option value='Co:44'{% if music=='Co:44' %} selected {% endif %}>ってゐ！ ～えいえんてゐver～</option>
+                    <option value='Co:46'{% if music=='Co:46' %} selected {% endif %}>天弓天華オトハナビ</option>
+                    <option value='Co:47'{% if music=='Co:47' %} selected {% endif %}>月齢11.3のキャンドルマジック</option>
+                    <option value='Co:48'{% if music=='Co:48' %} selected {% endif %}>Romantic Fall feat. 綾倉盟</option>
+                </optgroup>
+                <optgroup label="Ro">
+                    <option value='Ro:1'{% if music=='Ro:1' %} selected {% endif %}>チルノのパーフェクトさんすう教室</option>
+                    <option value='Ro:19'{% if music=='Ro:19' %} selected {% endif %}>チルノのパーフェクトさんすう教室（Ura Kagura）</option>
+                    <option value='Ro:2'{% if music=='Ro:2' %} selected {% endif %}>マツヨイナイトバグ</option>
+                    <option value='Ro:3'{% if music=='Ro:3' %} selected {% endif %}>幻想郷ふしぎ大発見V2</option>
+                    <option value='Ro:4'{% if music=='Ro:4' %} selected {% endif %}>Sweets Time</option>
+                    <option value='Ro:23'{% if music=='Ro:23' %} selected {% endif %}>Sweets Time（Ura Kagura）</option>
+                    <option value='Ro:5'{% if music=='Ro:5' %} selected {% endif %}>紅星ミゼラブル~廃憶編</option>
+                    <option value='Ro:35'{% if music=='Ro:35' %} selected {% endif %}>紅星ミゼラブル~廃憶編（Ura Kagura）</option>
+                    <option value='Ro:6'{% if music=='Ro:6' %} selected {% endif %}>ゆけむり魂温泉Ⅱ</option>
+                    <option value='Ro:7'{% if music=='Ro:7' %} selected {% endif %}>HANIPAGANDA</option>
+                    <option value='Ro:26'{% if music=='Ro:26' %} selected {% endif %}>HANIPAGANDA（Ura Kagura）</option>
+                    <option value='Ro:8'{% if music=='Ro:8' %} selected {% endif %}>レザマリでもつらくないっ！</option>
+                    <option value='Ro:9'{% if music=='Ro:9' %} selected {% endif %}>Against, Perfect Cherry Blossom</option>
+                    <option value='Ro:10'{% if music=='Ro:10' %} selected {% endif %}>Help me, ERINNNNNN!!</option>
+                    <option value='Ro:11'{% if music=='Ro:11' %} selected {% endif %}>トランスダンスアナーキー</option>
+                    <option value='Ro:12'{% if music=='Ro:12' %} selected {% endif %}>drizzly rain</option>
+                    <option value='Ro:13'{% if music=='Ro:13' %} selected {% endif %}>ウサテイ20XX</option>
+                    <option value='Ro:30'{% if music=='Ro:30' %} selected {% endif %}>ウサテイ20XX（Ura Kagura）</option>
+                    <option value='Ro:14'{% if music=='Ro:14' %} selected {% endif %}>フォールオブフォール</option>
+                    <option value='Ro:29'{% if music=='Ro:29' %} selected {% endif %}>フォールオブフォール（Ura Kagura）</option>
+                    <option value='Ro:15'{% if music=='Ro:15' %} selected {% endif %}>巡るHarvest</option>
+                    <option value='Ro:16'{% if music=='Ro:16' %} selected {% endif %}>響縁</option>
+                    <option value='Ro:17'{% if music=='Ro:17' %} selected {% endif %}>あうんどばいみー</option>
+                    <option value='Ro:40'{% if music=='Ro:40' %} selected {% endif %}>あうんどばいみー（Ura Kagura）</option>
+                    <option value='Ro:18'{% if music=='Ro:18' %} selected {% endif %}>SEE YOU AGAIN!</option>
+                    <option value='Ro:20'{% if music=='Ro:20' %} selected {% endif %}>LOVE EAST</option>
+                    <option value='Ro:21'{% if music=='Ro:21' %} selected {% endif %}>マリオネットメトロポリス</option>
+                    <option value='Ro:22'{% if music=='Ro:22' %} selected {% endif %}>妖々跋扈　～ Who done it!</option>
+                    <option value='Ro:24'{% if music=='Ro:24' %} selected {% endif %}>フォックスバレット</option>
+                    <option value='Ro:25'{% if music=='Ro:25' %} selected {% endif %}>芥川龍之介の河童</option>
+                    <option value='Ro:27'{% if music=='Ro:27' %} selected {% endif %}>Hell's Sun</option>
+                    <option value='Ro:28'{% if music=='Ro:28' %} selected {% endif %}>BURN IN HELL</option>
+                    <option value='Ro:31'{% if music=='Ro:31' %} selected {% endif %}>An stoirm</option>
+                    <option value='Ro:32'{% if music=='Ro:32' %} selected {% endif %}>Hollow Masquerade</option>
+                    <option value='Ro:33'{% if music=='Ro:33' %} selected {% endif %}>GAME OVER (In Disarray)</option>
+                    <option value='Ro:34'{% if music=='Ro:34' %} selected {% endif %}>博麗神社町内会音頭</option>
+                    <option value='Ro:36'{% if music=='Ro:36' %} selected {% endif %}>Aestivalis（ダンマクカグラEdit）</option>
+                    <option value='Ro:37'{% if music=='Ro:37' %} selected {% endif %}>WARNING×WARNING×WARNING</option>
+                    <option value='Ro:38'{% if music=='Ro:38' %} selected {% endif %}>はなまる！さいきょうハイパーチルノ</option>
+                    <option value='Ro:39'{% if music=='Ro:39' %} selected {% endif %}>Ford Stream</option>
+                    <option value='Ro:41'{% if music=='Ro:41' %} selected {% endif %}>色は匂へど散りぬるを</option>
+                    <option value='Ro:42'{% if music=='Ro:42' %} selected {% endif %}>Night Flight Believer</option>
+                    <option value='Ro:43'{% if music=='Ro:43' %} selected {% endif %}>Desire Drive</option>
+                    <option value='Ro:44'{% if music=='Ro:44' %} selected {% endif %}>Can't look away</option>
+                </optgroup>
+                <optgroup label="Em">
+                    <option value='Em:1'{% if music=='Em:1' %} selected {% endif %}>明星ロケット</option>
+                    <option value='Em:23'{% if music=='Em:23' %} selected {% endif %}>明星ロケット（Ura Kagura）</option>
+                    <option value='Em:2'{% if music=='Em:2' %} selected {% endif %}>月に叢雲華に風</option>
+                    <option value='Em:3'{% if music=='Em:3' %} selected {% endif %}>フラグメンツ</option>
+                    <option value='Em:31'{% if music=='Em:31' %} selected {% endif %}>フラグメンツ（Ura Kagura）</option>
+                    <option value='Em:4'{% if music=='Em:4' %} selected {% endif %}>有頂天ドリーマーズ</option>
+                    <option value='Em:27'{% if music=='Em:27' %} selected {% endif %}>有頂天ドリーマーズ（Ura Kagura）</option>
+                    <option value='Em:5'{% if music=='Em:5' %} selected {% endif %}>嘘と慟哭</option>
+                    <option value='Em:6'{% if music=='Em:6' %} selected {% endif %}>郷愁のロンド</option>
+                    <option value='Em:7'{% if music=='Em:7' %} selected {% endif %}>黄金航路</option>
+                    <option value='Em:8'{% if music=='Em:8' %} selected {% endif %}>ひとつよがりの逃避行</option>
+                    <option value='Em:9'{% if music=='Em:9' %} selected {% endif %}>待チ人ハ来ズ。</option>
+                    <option value='Em:10'{% if music=='Em:10' %} selected {% endif %}>SAMURAI GHOST GIRL, KILL KILL!</option>
+                    <option value='Em:24'{% if music=='Em:24' %} selected {% endif %}>SAMURAI GHOST GIRL, KILL KILL!（Ura Kagura）</option>
+                    <option value='Em:11'{% if music=='Em:11' %} selected {% endif %}>Sdistic Love</option>
+                    <option value='Em:34'{% if music=='Em:34' %} selected {% endif %}>Sadistic Love（Ura Kagura）</option>
+                    <option value='Em:12'{% if music=='Em:12' %} selected {% endif %}>The Karasu Wind</option>
+                    <option value='Em:13'{% if music=='Em:13' %} selected {% endif %}>Lotus Love</option>
+                    <option value='Em:39'{% if music=='Em:39' %} selected {% endif %}>Lotus Love（Ura kagura）</option>
+                    <option value='Em:14'{% if music=='Em:14' %} selected {% endif %}>flanticnight</option>
+                    <option value='Em:15'{% if music=='Em:15' %} selected {% endif %}>神霊廟秋祭りっ!</option>
+                    <option value='Em:16'{% if music=='Em:16' %} selected {% endif %}>PanneDemonology</option>
+                    <option value='Em:17'{% if music=='Em:17' %} selected {% endif %}>23145EASONS</option>
+                    <option value='Em:18'{% if music=='Em:18' %} selected {% endif %}>Spring of Dream</option>
+                    <option value='Em:19'{% if music=='Em:19' %} selected {% endif %}>White Lotus...</option>
+                    <option value='Em:20'{% if music=='Em:20' %} selected {% endif %}>キング・オブ・ザ・説教</option>
+                    <option value='Em:21'{% if music=='Em:21' %} selected {% endif %}>愛き夜道 feat.ランコ(豚乙女),雨天決行</option>
+                    <option value='Em:22'{% if music=='Em:22' %} selected {% endif %}>Rainy, rainy days</option>
+                    <option value='Em:25'{% if music=='Em:25' %} selected {% endif %}>Breaking the Silence</option>
+                    <option value='Em:26'{% if music=='Em:26' %} selected {% endif %}>遥か遠く遥か彼方</option>
+                    <option value='Em:28'{% if music=='Em:28' %} selected {% endif %}>ミシャグジ・エンパイア</option>
+                    <option value='Em:29'{% if music=='Em:29' %} selected {% endif %}>偶像に世界を委ねて(marasy piano ver.)</option>
+                    <option value='Em:30'{% if music=='Em:30' %} selected {% endif %}>Iconoclasm</option>
+                    <option value='Em:32'{% if music=='Em:32' %} selected {% endif %}>カリスマ煉獄天神</option>
+                    <option value='Em:33'{% if music=='Em:33' %} selected {% endif %}>Mami Mami Zone</option>
+                    <option value='Em:35'{% if music=='Em:35' %} selected {% endif %}>黒い海に紅く　～ Legendary Fish</option>
+                    <option value='Em:36'{% if music=='Em:36' %} selected {% endif %}>絶望的不協和音</option>
+                    <option value='Em:37'{% if music=='Em:37' %} selected {% endif %}>らいぶおあらいぶ！</option>
+                    <option value='Em:38'{% if music=='Em:38' %} selected {% endif %}>Karma D-Live</option>
+                    <option value='Em:40'{% if music=='Em:40' %} selected {% endif %}>夜空と人形</option>
+                    <option value='Em:41'{% if music=='Em:41' %} selected {% endif %}>Painting The Lips Red</option>
+                    <option value='Em:42'{% if music=='Em:42' %} selected {% endif %}>ハートビートは鳴りやまない</option>
+                    <option value='Em:43'{% if music=='Em:43' %} selected {% endif %}>ハウリング</option>
+                    <option value='Em:44'{% if music=='Em:44' %} selected {% endif %}>幻想河童行進曲(feat. ｙｔｒ)</option>
+                </optgroup>
+                <optgroup label="Danmaku">
+                    <option value='Danmaku:1'{% if music=='Danmaku:1' %} selected {% endif %}>Bad Apple!! feat.nomico（Danmaku）</option>
+                    <option value='Danmaku:2'{% if music=='Danmaku:2' %} selected {% endif %}>幻想に咲いた花（Danmaku）</option>
+                    <option value='Danmaku:3'{% if music=='Danmaku:3' %} selected {% endif %}>絡繰りドール（Danmaku）</option>
+                    <option value='Danmaku:4'{% if music=='Danmaku:4' %} selected {% endif %}>フラグメンツ（Danmaku）</option>
+                    <option value='Danmaku:5'{% if music=='Danmaku:5' %} selected {% endif %}>下克上々（Danmaku）</option>
+                    <option value='Danmaku:6'{% if music=='Danmaku:6' %} selected {% endif %}>月に叢雲華に風（Danmaku）</option>
+                    <option value='Danmaku:7'{% if music=='Danmaku:7' %} selected {% endif %}>Bad Apple!! feat. nomico（美しき幻想の色彩）（Danmaku）</option>
+                    <option value='Danmaku:8'{% if music=='Danmaku:8' %} selected {% endif %}>Ilias（Danmaku）</option>
+                    <option value='Danmaku:9'{% if music=='Danmaku:9' %} selected {% endif %}>解けないように（Danmaku）</option>
+                    <option value='Danmaku:10'{% if music=='Danmaku:10' %} selected {% endif %}>Ayakashi set 14 Another 〜 夜が降りてくる（Danmaku）</option>
+                    <option value='Danmaku:11'{% if music=='Danmaku:11' %} selected {% endif %}>Resonance　～ 私たらしめるもの（Danmaku）</option>
+                </optgroup>
+            </select>
+            <p>{{attention_music}}</p>
+        </div>
+        <!--総戦力-->
+        <div>
+            <p class="panel">総戦力（整数で入力）</p>
+            <p><input type="text" id="power" name="power" value="{{request.form['power']}}"></p>
+            <p>{{attention_power}}</p>
+        </div>
+        <!--ミタマバースト-->
+        <div>
+            <p class="panel">ミタマバースト（スコアアップ関連かつ9凸(Lv3)以上のみ全て対応）</p>
+            <select name="burst">
+                <option value='効果なし'>ミタマバーストの効果を選択</option>
+                <optgroup label="SSR">
+                    <option value='8秒間ノーツスコア+70%、スライドノーツならさらにノーツスコア+70%'{% if burst=='8秒間ノーツスコア+70%、スライドノーツならさらにノーツスコア+70%' %} selected {% endif %}>8秒間ノーツスコア+70%、スライドノーツならさらにノーツスコア+70%(Lv3)</option>
+                    <option value='8秒間ノーツスコア+70%、ファジーノーツならさらにノーツスコア+70%'{% if burst=='8秒間ノーツスコア+70%、ファジーノーツならさらにノーツスコア+70%' %} selected {% endif %}>8秒間ノーツスコア+70%、ファジーノーツならさらにノーツスコア+70%(Lv3)</option>
+                    <option value='8秒間ノーツスコア+70%、ノーマルノーツならさらにノーツスコア+70%'{% if burst=='8秒間ノーツスコア+70%、ノーマルノーツならさらにノーツスコア+70%' %} selected {% endif %}>8秒間ノーツスコア+70%、ノーマルノーツならさらにノーツスコア+70%(Lv3)</option>
+                    <option value='8秒間ノーツスコア+70%'{% if burst=='8秒間ノーツスコア+70%' %} selected {% endif %}>8秒間ノーツスコア+70%(Lv3)</option>
+                    <option value='6秒間ノーツスコア+65%、スライドノーツならさらにノーツスコア+65%'{% if burst=='6秒間ノーツスコア+65%、スライドノーツならさらにノーツスコア+65%' %} selected {% endif %}>6秒間ノーツスコア+65%、スライドノーツならさらにノーツスコア+65%(Lv2)</option>
+                    <option value='6秒間ノーツスコア+65%、ファジーノーツならさらにノーツスコア+65%'{% if burst=='6秒間ノーツスコア+65%、ファジーノーツならさらにノーツスコア+65%' %} selected {% endif %}>6秒間ノーツスコア+65%、ファジーノーツならさらにノーツスコア+65%(Lv2)</option>
+                    <option value='6秒間ノーツスコア+65%、ノーマルノーツならさらにノーツスコア+65%'{% if burst=='6秒間ノーツスコア+65%、ノーマルノーツならさらにノーツスコア+65%' %} selected {% endif %}>6秒間ノーツスコア+65%、ノーマルノーツならさらにノーツスコア+65%(Lv2)</option>
+                    <option value='6秒間ノーツスコア+65%'{% if burst=='6秒間ノーツスコア+65%' %} selected {% endif %}>6秒間ノーツスコア+65%(Lv2)</option>
+                </optgroup>
+                <optgroup label="文化祭霊夢（9凸以上(Lv3)のみ対応）">
+                    <option value='8秒間ノーツスコア+60%'{% if burst=='8秒間ノーツスコア+60%' %} selected {% endif %}>8秒間ノーツスコア+60%(Lv3)</option>
+                </optgroup>
+                <optgroup label="SR">
+                    <option value='8秒間ノーツスコア+50%'{% if burst=='8秒間ノーツスコア+50%' %} selected {% endif %}>8秒間ノーツスコア+50%(Lv3)</option>
+                    <option value='6秒間ノーツスコア+45%'{% if burst=='6秒間ノーツスコア+45%' %} selected {% endif %}>6秒間ノーツスコア+45%(Lv2)</option>
+                </optgroup>
+                <option value='効果なし2'{% if burst=='効果なし2' %} selected {% endif %}>その他(スコアアップ以外)</option>
+            </select>
+        </div>
+        <!--カグラエフェクト-->
+        <div>
+            <p class="panel">カグラエフェクト（スコアアップ関連かつSSR, SR5凸(Lv3)のみ全て対応, エフェクト発動確率は属性一致ボーナスにより1.5倍されている場合のみ対応）</p>
+            <div>ミタマ1：
+            <select name="mitama1">
+                <option value='効果なし'>カグラエフェクトの効果を選択</option>
+                <optgroup label="SSR Lv3(5凸以上)">
+                    <option value='10秒ごとに52%の確率で9秒間ノーツスコア+30%'{% if mitama1=='10秒ごとに52%の確率で9秒間ノーツスコア+30%' %} selected {% endif %}>10秒ごとに52%の確率で9秒間ノーツスコア+30%</option>
+                    <option value='8秒ごとに63%の確率で7.2秒間、直前に発動した他のカグラエフェクトの効果を発動する'{% if mitama1=='8秒ごとに63%の確率で7.2秒間、直前に発動した他のカグラエフェクトの効果を発動する' %} selected {% endif %}>8秒ごとに63%の確率で7.2秒間、直前に発動した他のカグラエフェクトの効果を発動する</option>
+                    <option value='7秒ごとに63%の確率で6.3秒間、直前に発動した他のカグラエフェクトの効果を発動する'{% if mitama1=='7秒ごとに63%の確率で6.3秒間、直前に発動した他のカグラエフェクトの効果を発動する' %} selected {% endif %}>7秒ごとに63%の確率で6.3秒間、直前に発動した他のカグラエフェクトの効果を発動する</option>
+                    <option value='6秒ごとに62%の確率で5.4秒間、直前に発動した他のカグラエフェクトの効果を発動する'{% if mitama1=='6秒ごとに62%の確率で5.4秒間、直前に発動した他のカグラエフェクトの効果を発動する' %} selected {% endif %}>6秒ごとに62%の確率で5.4秒間、直前に発動した他のカグラエフェクトの効果を発動する</option>
+                    <option value='8秒ごとに63%の確率で7.2秒間ノーツスコア+20%、BRILLIANTならさらにノーツスコア+20%'{% if mitama1=='8秒ごとに63%の確率で7.2秒間ノーツスコア+20%、BRILLIANTならさらにノーツスコア+20%' %} selected {% endif %}>8秒ごとに63%の確率で7.2秒間ノーツスコア+20%、BRILLIANTならさらにノーツスコア+20%</option>
+                    <option value='7秒ごとに63%の確率で6.3秒間ノーツスコア+20%、BRILLIANTならさらにノーツスコア+20%'{% if mitama1=='7秒ごとに63%の確率で6.3秒間ノーツスコア+20%、BRILLIANTならさらにノーツスコア+20%' %} selected {% endif %}>7秒ごとに63%の確率で6.3秒間ノーツスコア+20%、BRILLIANTならさらにノーツスコア+20%</option>
+                    <option value='6秒ごとに62%の確率で5.4秒間ノーツスコア+20%、BRILLIANTならさらにノーツスコア+20%'{% if mitama1=='6秒ごとに62%の確率で5.4秒間ノーツスコア+20%、BRILLIANTならさらにノーツスコア+20%' %} selected {% endif %}>6秒ごとに62%の確率で5.4秒間ノーツスコア+20%、BRILLIANTならさらにノーツスコア+20%</option>
+                    <option value='5秒ごとに61%の確率で4.5秒間ノーツスコア+20%、BRILLIANTならさらにノーツスコア+20%'{% if mitama1=='5秒ごとに61%の確率で4.5秒間ノーツスコア+20%、BRILLIANTならさらにノーツスコア+20%' %} selected {% endif %}>5秒ごとに61%の確率で4.5秒間ノーツスコア+20%、BRILLIANTならさらにノーツスコア+20%</option>
+                    <option value='8秒ごとに63%の確率で7.2秒間ノーツスコア+20%、100コンボ以上の時はさらにノーツスコア+20%'{% if mitama1=='8秒ごとに63%の確率で7.2秒間ノーツスコア+20%、100コンボ以上の時はさらにノーツスコア+20%' %} selected {% endif %}>8秒ごとに63%の確率で7.2秒間ノーツスコア+20%、100コンボ以上の時はさらにノーツスコア+20%</option>
+                    <option value='7秒ごとに63%の確率で6.3秒間ノーツスコア+20%、100コンボ以上の時はさらにノーツスコア+20%'{% if mitama1=='7秒ごとに63%の確率で6.3秒間ノーツスコア+20%、100コンボ以上の時はさらにノーツスコア+20%' %} selected {% endif %}>7秒ごとに63%の確率で6.3秒間ノーツスコア+20%、100コンボ以上の時はさらにノーツスコア+20%</option>
+                    <option value='6秒ごとに62%の確率で5.4秒間ノーツスコア+20%、100コンボ以上の時はさらにノーツスコア+20%'{% if mitama1=='6秒ごとに62%の確率で5.4秒間ノーツスコア+20%、100コンボ以上の時はさらにノーツスコア+20%' %} selected {% endif %}>6秒ごとに62%の確率で5.4秒間ノーツスコア+20%、100コンボ以上の時はさらにノーツスコア+20%</option>
+                    <option value='5秒ごとに61%の確率で4.5秒間ノーツスコア+20%、100コンボ以上の時はさらにノーツスコア+20%'{% if mitama1=='5秒ごとに61%の確率で4.5秒間ノーツスコア+20%、100コンボ以上の時はさらにノーツスコア+20%' %} selected {% endif %}>5秒ごとに61%の確率で4.5秒間ノーツスコア+20%、100コンボ以上の時はさらにノーツスコア+20%</option>
+                    <option value='7秒ごとに63%の確率で6.3秒間ノーツスコア+20%、~編成時はさらにノーツスコア+10%'{% if mitama1=='7秒ごとに63%の確率で6.3秒間ノーツスコア+20%、~編成時はさらにノーツスコア+10%' %} selected {% endif %}>7秒ごとに63%の確率で6.3秒間ノーツスコア+20%、~編成時はさらにノーツスコア+10%</option>
+                    <option value='5秒ごとに61%の確率で4.5秒間ノーツスコア+20%、~編成時はさらにノーツスコア+10%'{% if mitama1=='5秒ごとに61%の確率で4.5秒間ノーツスコア+20%、~編成時はさらにノーツスコア+10%' %} selected {% endif %}>5秒ごとに61%の確率で4.5秒間ノーツスコア+20%、~編成時はさらにノーツスコア+10%</option>
+                    <option value='8秒ごとに63%の確率で7.2秒間ノーツスコア+25%'{% if mitama1=='8秒ごとに63%の確率で7.2秒間ノーツスコア+25%' %} selected {% endif %}>8秒ごとに63%の確率で7.2秒間ノーツスコア+25%</option>
+                    <option value='7秒ごとに63%の確率で6.3秒間ノーツスコア+25%'{% if mitama1=='7秒ごとに63%の確率で6.3秒間ノーツスコア+25%' %} selected {% endif %}>7秒ごとに63%の確率で6.3秒間ノーツスコア+25%</option>
+                    <option value='6秒ごとに62%の確率で5.4秒間ノーツスコア+25%'{% if mitama1=='6秒ごとに62%の確率で5.4秒間ノーツスコア+25%' %} selected {% endif %}>6秒ごとに62%の確率で5.4秒間ノーツスコア+25%</option>
+                    <option value='5秒ごとに61%の確率で4.5秒間ノーツスコア+25%'{% if mitama1=='5秒ごとに61%の確率で4.5秒間ノーツスコア+25%' %} selected {% endif %}>5秒ごとに61%の確率で4.5秒間ノーツスコア+25%</option>
+                </optgroup>
+                <optgroup label="SSR Lv2(3凸以上)">
+                    <option value='10秒ごとに42%の確率で7秒間ノーツスコア+28%'{% if mitama1=='10秒ごとに42%の確率で7秒間ノーツスコア+28%' %} selected {% endif %}>10秒ごとに42%の確率で7秒間ノーツスコア+28%</option>
+                    <option value='7秒ごとに53%の確率で4.9秒間ノーツスコア+18%、~編成時はさらにノーツスコア+8%'{% if mitama1=='7秒ごとに53%の確率で4.9秒間ノーツスコア+18%、~編成時はさらにノーツスコア+8%' %} selected {% endif %}>7秒ごとに53%の確率で4.9秒間ノーツスコア+18%、~編成時はさらにノーツスコア+8%</option>
+                    <option value='5秒ごとに51%の確率で3.5秒間ノーツスコア+18%、~編成時はさらにノーツスコア+8%'{% if mitama1=='5秒ごとに51%の確率で3.5秒間ノーツスコア+18%、~編成時はさらにノーツスコア+8%' %} selected {% endif %}>5秒ごとに51%の確率で3.5秒間ノーツスコア+18%、~編成時はさらにノーツスコア+8%</option>
+                    <option value='8秒ごとに53%の確率で5.6秒間ノーツスコア+23%'{% if mitama1=='8秒ごとに53%の確率で5.6秒間ノーツスコア+23%' %} selected {% endif %}>8秒ごとに53%の確率で5.6秒間ノーツスコア+23%</option>
+                    <option value='7秒ごとに53%の確率で4.9秒間ノーツスコア+23%'{% if mitama1=='7秒ごとに53%の確率で4.9秒間ノーツスコア+23%' %} selected {% endif %}>7秒ごとに53%の確率で4.9秒間ノーツスコア+23%</option>
+                    <option value='6秒ごとに52%の確率で4.2秒間ノーツスコア+23%'{% if mitama1=='6秒ごとに52%の確率で4.2秒間ノーツスコア+23%' %} selected {% endif %}>6秒ごとに52%の確率で4.2秒間ノーツスコア+23%</option>
+                    <option value='5秒ごとに51%の確率で3.5秒間ノーツスコア+23%'{% if mitama1=='5秒ごとに51%の確率で3.5秒間ノーツスコア+23%' %} selected {% endif %}>5秒ごとに51%の確率で3.5秒間ノーツスコア+23%</option>
+                </optgroup>
+                <optgroup label="文化祭霊夢">
+                    <option value='6秒ごとに62%の確率で5.4秒間ノーツスコア+22%'{% if mitama1=='6秒ごとに62%の確率で5.4秒間ノーツスコア+22%' %} selected {% endif %}>6秒ごとに62%の確率で5.4秒間ノーツスコア+22%</option>
+                </optgroup>
+                <optgroup label="SR">
+                    <option value='4秒毎に67%の確率で3.8秒間ノーツスコア+20%、対象ステージの場合はさらにノーツスコア+30%'{% if mitama1=='4秒毎に67%の確率で3.8秒間ノーツスコア+20%、対象ステージの場合はさらにノーツスコア+30%' %} selected {% endif %}>4秒毎に67%の確率で3.8秒間ノーツスコア+20%、対象ステージの場合はさらにノーツスコア+30%</option>
+                    <option value='8秒ごとに63%の確率で7.2秒間ノーツスコア+15%、BRILLIANTならさらにノーツスコア+15%'{% if mitama1=='8秒ごとに63%の確率で7.2秒間ノーツスコア+15%、BRILLIANTならさらにノーツスコア+15%' %} selected {% endif %}>8秒ごとに63%の確率で7.2秒間ノーツスコア+15%、BRILLIANTならさらにノーツスコア+15%</option>
+                    <option value='7秒ごとに63%の確率で6.3秒間ノーツスコア+15%、BRILLIANTならさらにノーツスコア+15%'{% if mitama1=='7秒ごとに63%の確率で6.3秒間ノーツスコア+15%、BRILLIANTならさらにノーツスコア+15%' %} selected {% endif %}>7秒ごとに63%の確率で6.3秒間ノーツスコア+15%、BRILLIANTならさらにノーツスコア+15%</option>
+                    <option value='6秒ごとに62%の確率で5.4秒間ノーツスコア+15%、BRILLIANTならさらにノーツスコア+15%'{% if mitama1=='6秒ごとに62%の確率で5.4秒間ノーツスコア+15%、BRILLIANTならさらにノーツスコア+15%' %} selected {% endif %}>6秒ごとに62%の確率で5.4秒間ノーツスコア+15%、BRILLIANTならさらにノーツスコア+15%</option>
+                    <option value='8秒ごとに63%の確率で7.2秒間ノーツスコア+15%、100コンボ以上の時はさらにノーツスコア+15%'{% if mitama1=='8秒ごとに63%の確率で7.2秒間ノーツスコア+15%、100コンボ以上の時はさらにノーツスコア+15%' %} selected {% endif %}>8秒ごとに63%の確率で7.2秒間ノーツスコア+15%、100コンボ以上の時はさらにノーツスコア+15%</option>
+                    <option value='7秒ごとに63%の確率で6.3秒間ノーツスコア+15%、100コンボ以上の時はさらにノーツスコア+15%'{% if mitama1=='7秒ごとに63%の確率で6.3秒間ノーツスコア+15%、100コンボ以上の時はさらにノーツスコア+15%' %} selected {% endif %}>7秒ごとに63%の確率で6.3秒間ノーツスコア+15%、100コンボ以上の時はさらにノーツスコア+15%</option>
+                    <option value='6秒ごとに62%の確率で5.4秒間ノーツスコア+15%、100コンボ以上の時はさらにノーツスコア+15%'{% if mitama1=='6秒ごとに62%の確率で5.4秒間ノーツスコア+15%、100コンボ以上の時はさらにノーツスコア+15%' %} selected {% endif %}>6秒ごとに62%の確率で5.4秒間ノーツスコア+15%、100コンボ以上の時はさらにノーツスコア+15%</option>
+                    <option value='8秒ごとに63%の確率で7.2秒間ノーツスコア+20%'{% if mitama1=='8秒ごとに63%の確率で7.2秒間ノーツスコア+20%' %} selected {% endif %}>8秒ごとに63%の確率で7.2秒間ノーツスコア+20%</option>
+                    <option value='7秒ごとに63%の確率で6.3秒間ノーツスコア+20%'{% if mitama1=='7秒ごとに63%の確率で6.3秒間ノーツスコア+20%' %} selected {% endif %}>7秒ごとに63%の確率で6.3秒間ノーツスコア+20%</option>
+                    <option value='6秒ごとに62%の確率で5.4秒間ノーツスコア+20%'{% if mitama1=='6秒ごとに62%の確率で5.4秒間ノーツスコア+20%' %} selected {% endif %}>6秒ごとに62%の確率で5.4秒間ノーツスコア+20%</option>
+                </optgroup>
+                <option value='効果なし2'{% if mitama1=='効果なし2' %} selected {% endif %}>その他(スコアアップ以外)</option>
+            </select>
+            </div>
+            <div>ミタマ2：
+                <select name="mitama2">
+                    <option value='効果なし'>カグラエフェクトの効果を選択</option>
+                    <optgroup label="SSR Lv3(5凸以上)">
+                        <option value='10秒ごとに52%の確率で9秒間ノーツスコア+30%'{% if mitama2=='10秒ごとに52%の確率で9秒間ノーツスコア+30%' %} selected {% endif %}>10秒ごとに52%の確率で9秒間ノーツスコア+30%</option>
+                        <option value='8秒ごとに63%の確率で7.2秒間、直前に発動した他のカグラエフェクトの効果を発動する'{% if mitama2=='8秒ごとに63%の確率で7.2秒間、直前に発動した他のカグラエフェクトの効果を発動する' %} selected {% endif %}>8秒ごとに63%の確率で7.2秒間、直前に発動した他のカグラエフェクトの効果を発動する</option>
+                        <option value='7秒ごとに63%の確率で6.3秒間、直前に発動した他のカグラエフェクトの効果を発動する'{% if mitama2=='7秒ごとに63%の確率で6.3秒間、直前に発動した他のカグラエフェクトの効果を発動する' %} selected {% endif %}>7秒ごとに63%の確率で6.3秒間、直前に発動した他のカグラエフェクトの効果を発動する</option>
+                        <option value='6秒ごとに62%の確率で5.4秒間、直前に発動した他のカグラエフェクトの効果を発動する'{% if mitama2=='6秒ごとに62%の確率で5.4秒間、直前に発動した他のカグラエフェクトの効果を発動する' %} selected {% endif %}>6秒ごとに62%の確率で5.4秒間、直前に発動した他のカグラエフェクトの効果を発動する</option>
+                        <option value='8秒ごとに63%の確率で7.2秒間ノーツスコア+20%、BRILLIANTならさらにノーツスコア+20%'{% if mitama2=='8秒ごとに63%の確率で7.2秒間ノーツスコア+20%、BRILLIANTならさらにノーツスコア+20%' %} selected {% endif %}>8秒ごとに63%の確率で7.2秒間ノーツスコア+20%、BRILLIANTならさらにノーツスコア+20%</option>
+                        <option value='7秒ごとに63%の確率で6.3秒間ノーツスコア+20%、BRILLIANTならさらにノーツスコア+20%'{% if mitama2=='7秒ごとに63%の確率で6.3秒間ノーツスコア+20%、BRILLIANTならさらにノーツスコア+20%' %} selected {% endif %}>7秒ごとに63%の確率で6.3秒間ノーツスコア+20%、BRILLIANTならさらにノーツスコア+20%</option>
+                        <option value='6秒ごとに62%の確率で5.4秒間ノーツスコア+20%、BRILLIANTならさらにノーツスコア+20%'{% if mitama2=='6秒ごとに62%の確率で5.4秒間ノーツスコア+20%、BRILLIANTならさらにノーツスコア+20%' %} selected {% endif %}>6秒ごとに62%の確率で5.4秒間ノーツスコア+20%、BRILLIANTならさらにノーツスコア+20%</option>
+                        <option value='5秒ごとに61%の確率で4.5秒間ノーツスコア+20%、BRILLIANTならさらにノーツスコア+20%'{% if mitama2=='5秒ごとに61%の確率で4.5秒間ノーツスコア+20%、BRILLIANTならさらにノーツスコア+20%' %} selected {% endif %}>5秒ごとに61%の確率で4.5秒間ノーツスコア+20%、BRILLIANTならさらにノーツスコア+20%</option>
+                        <option value='8秒ごとに63%の確率で7.2秒間ノーツスコア+20%、100コンボ以上の時はさらにノーツスコア+20%'{% if mitama2=='8秒ごとに63%の確率で7.2秒間ノーツスコア+20%、100コンボ以上の時はさらにノーツスコア+20%' %} selected {% endif %}>8秒ごとに63%の確率で7.2秒間ノーツスコア+20%、100コンボ以上の時はさらにノーツスコア+20%</option>
+                        <option value='7秒ごとに63%の確率で6.3秒間ノーツスコア+20%、100コンボ以上の時はさらにノーツスコア+20%'{% if mitama2=='7秒ごとに63%の確率で6.3秒間ノーツスコア+20%、100コンボ以上の時はさらにノーツスコア+20%' %} selected {% endif %}>7秒ごとに63%の確率で6.3秒間ノーツスコア+20%、100コンボ以上の時はさらにノーツスコア+20%</option>
+                        <option value='6秒ごとに62%の確率で5.4秒間ノーツスコア+20%、100コンボ以上の時はさらにノーツスコア+20%'{% if mitama2=='6秒ごとに62%の確率で5.4秒間ノーツスコア+20%、100コンボ以上の時はさらにノーツスコア+20%' %} selected {% endif %}>6秒ごとに62%の確率で5.4秒間ノーツスコア+20%、100コンボ以上の時はさらにノーツスコア+20%</option>
+                        <option value='5秒ごとに61%の確率で4.5秒間ノーツスコア+20%、100コンボ以上の時はさらにノーツスコア+20%'{% if mitama2=='5秒ごとに61%の確率で4.5秒間ノーツスコア+20%、100コンボ以上の時はさらにノーツスコア+20%' %} selected {% endif %}>5秒ごとに61%の確率で4.5秒間ノーツスコア+20%、100コンボ以上の時はさらにノーツスコア+20%</option>
+                        <option value='7秒ごとに63%の確率で6.3秒間ノーツスコア+20%、~編成時はさらにノーツスコア+10%'{% if mitama2=='7秒ごとに63%の確率で6.3秒間ノーツスコア+20%、~編成時はさらにノーツスコア+10%' %} selected {% endif %}>7秒ごとに63%の確率で6.3秒間ノーツスコア+20%、~編成時はさらにノーツスコア+10%</option>
+                        <option value='5秒ごとに61%の確率で4.5秒間ノーツスコア+20%、~編成時はさらにノーツスコア+10%'{% if mitama2=='5秒ごとに61%の確率で4.5秒間ノーツスコア+20%、~編成時はさらにノーツスコア+10%' %} selected {% endif %}>5秒ごとに61%の確率で4.5秒間ノーツスコア+20%、~編成時はさらにノーツスコア+10%</option>
+                        <option value='8秒ごとに63%の確率で7.2秒間ノーツスコア+25%'{% if mitama2=='8秒ごとに63%の確率で7.2秒間ノーツスコア+25%' %} selected {% endif %}>8秒ごとに63%の確率で7.2秒間ノーツスコア+25%</option>
+                        <option value='7秒ごとに63%の確率で6.3秒間ノーツスコア+25%'{% if mitama2=='7秒ごとに63%の確率で6.3秒間ノーツスコア+25%' %} selected {% endif %}>7秒ごとに63%の確率で6.3秒間ノーツスコア+25%</option>
+                        <option value='6秒ごとに62%の確率で5.4秒間ノーツスコア+25%'{% if mitama2=='6秒ごとに62%の確率で5.4秒間ノーツスコア+25%' %} selected {% endif %}>6秒ごとに62%の確率で5.4秒間ノーツスコア+25%</option>
+                        <option value='5秒ごとに61%の確率で4.5秒間ノーツスコア+25%'{% if mitama2=='5秒ごとに61%の確率で4.5秒間ノーツスコア+25%' %} selected {% endif %}>5秒ごとに61%の確率で4.5秒間ノーツスコア+25%</option>
+                    </optgroup>
+                    <optgroup label="SSR Lv2(3凸以上)">
+                        <option value='10秒ごとに42%の確率で7秒間ノーツスコア+28%'{% if mitama2=='10秒ごとに42%の確率で7秒間ノーツスコア+28%' %} selected {% endif %}>10秒ごとに42%の確率で7秒間ノーツスコア+28%</option>
+                        <option value='7秒ごとに53%の確率で4.9秒間ノーツスコア+18%、~編成時はさらにノーツスコア+8%'{% if mitama2=='7秒ごとに53%の確率で4.9秒間ノーツスコア+18%、~編成時はさらにノーツスコア+8%' %} selected {% endif %}>7秒ごとに53%の確率で4.9秒間ノーツスコア+18%、~編成時はさらにノーツスコア+8%</option>
+                        <option value='5秒ごとに51%の確率で3.5秒間ノーツスコア+18%、~編成時はさらにノーツスコア+8%'{% if mitama2=='5秒ごとに51%の確率で3.5秒間ノーツスコア+18%、~編成時はさらにノーツスコア+8%' %} selected {% endif %}>5秒ごとに51%の確率で3.5秒間ノーツスコア+18%、~編成時はさらにノーツスコア+8%</option>
+                        <option value='8秒ごとに53%の確率で5.6秒間ノーツスコア+23%'{% if mitama2=='8秒ごとに53%の確率で5.6秒間ノーツスコア+23%' %} selected {% endif %}>8秒ごとに53%の確率で5.6秒間ノーツスコア+23%</option>
+                        <option value='7秒ごとに53%の確率で4.9秒間ノーツスコア+23%'{% if mitama2=='7秒ごとに53%の確率で4.9秒間ノーツスコア+23%' %} selected {% endif %}>7秒ごとに53%の確率で4.9秒間ノーツスコア+23%</option>
+                        <option value='6秒ごとに52%の確率で4.2秒間ノーツスコア+23%'{% if mitama2=='6秒ごとに52%の確率で4.2秒間ノーツスコア+23%' %} selected {% endif %}>6秒ごとに52%の確率で4.2秒間ノーツスコア+23%</option>
+                        <option value='5秒ごとに51%の確率で3.5秒間ノーツスコア+23%'{% if mitama2=='5秒ごとに51%の確率で3.5秒間ノーツスコア+23%' %} selected {% endif %}>5秒ごとに51%の確率で3.5秒間ノーツスコア+23%</option>
+                    </optgroup>
+                    <optgroup label="文化祭霊夢">
+                        <option value='6秒ごとに62%の確率で5.4秒間ノーツスコア+22%'{% if mitama2=='6秒ごとに62%の確率で5.4秒間ノーツスコア+22%' %} selected {% endif %}>6秒ごとに62%の確率で5.4秒間ノーツスコア+22%</option>
+                    </optgroup>
+                    <optgroup label="SR">
+                        <option value='4秒毎に67%の確率で3.8秒間ノーツスコア+20%、対象ステージの場合はさらにノーツスコア+30%'{% if mitama2=='4秒毎に67%の確率で3.8秒間ノーツスコア+20%、対象ステージの場合はさらにノーツスコア+30%' %} selected {% endif %}>4秒毎に67%の確率で3.8秒間ノーツスコア+20%、対象ステージの場合はさらにノーツスコア+30%</option>
+                        <option value='8秒ごとに63%の確率で7.2秒間ノーツスコア+15%、BRILLIANTならさらにノーツスコア+15%'{% if mitama2=='8秒ごとに63%の確率で7.2秒間ノーツスコア+15%、BRILLIANTならさらにノーツスコア+15%' %} selected {% endif %}>8秒ごとに63%の確率で7.2秒間ノーツスコア+15%、BRILLIANTならさらにノーツスコア+15%</option>
+                        <option value='7秒ごとに63%の確率で6.3秒間ノーツスコア+15%、BRILLIANTならさらにノーツスコア+15%'{% if mitama2=='7秒ごとに63%の確率で6.3秒間ノーツスコア+15%、BRILLIANTならさらにノーツスコア+15%' %} selected {% endif %}>7秒ごとに63%の確率で6.3秒間ノーツスコア+15%、BRILLIANTならさらにノーツスコア+15%</option>
+                        <option value='6秒ごとに62%の確率で5.4秒間ノーツスコア+15%、BRILLIANTならさらにノーツスコア+15%'{% if mitama2=='6秒ごとに62%の確率で5.4秒間ノーツスコア+15%、BRILLIANTならさらにノーツスコア+15%' %} selected {% endif %}>6秒ごとに62%の確率で5.4秒間ノーツスコア+15%、BRILLIANTならさらにノーツスコア+15%</option>
+                        <option value='8秒ごとに63%の確率で7.2秒間ノーツスコア+15%、100コンボ以上の時はさらにノーツスコア+15%'{% if mitama2=='8秒ごとに63%の確率で7.2秒間ノーツスコア+15%、100コンボ以上の時はさらにノーツスコア+15%' %} selected {% endif %}>8秒ごとに63%の確率で7.2秒間ノーツスコア+15%、100コンボ以上の時はさらにノーツスコア+15%</option>
+                        <option value='7秒ごとに63%の確率で6.3秒間ノーツスコア+15%、100コンボ以上の時はさらにノーツスコア+15%'{% if mitama2=='7秒ごとに63%の確率で6.3秒間ノーツスコア+15%、100コンボ以上の時はさらにノーツスコア+15%' %} selected {% endif %}>7秒ごとに63%の確率で6.3秒間ノーツスコア+15%、100コンボ以上の時はさらにノーツスコア+15%</option>
+                        <option value='6秒ごとに62%の確率で5.4秒間ノーツスコア+15%、100コンボ以上の時はさらにノーツスコア+15%'{% if mitama2=='6秒ごとに62%の確率で5.4秒間ノーツスコア+15%、100コンボ以上の時はさらにノーツスコア+15%' %} selected {% endif %}>6秒ごとに62%の確率で5.4秒間ノーツスコア+15%、100コンボ以上の時はさらにノーツスコア+15%</option>
+                        <option value='8秒ごとに63%の確率で7.2秒間ノーツスコア+20%'{% if mitama2=='8秒ごとに63%の確率で7.2秒間ノーツスコア+20%' %} selected {% endif %}>8秒ごとに63%の確率で7.2秒間ノーツスコア+20%</option>
+                        <option value='7秒ごとに63%の確率で6.3秒間ノーツスコア+20%'{% if mitama2=='7秒ごとに63%の確率で6.3秒間ノーツスコア+20%' %} selected {% endif %}>7秒ごとに63%の確率で6.3秒間ノーツスコア+20%</option>
+                        <option value='6秒ごとに62%の確率で5.4秒間ノーツスコア+20%'{% if mitama2=='6秒ごとに62%の確率で5.4秒間ノーツスコア+20%' %} selected {% endif %}>6秒ごとに62%の確率で5.4秒間ノーツスコア+20%</option>
+                    </optgroup>
+                    <option value='効果なし2'{% if mitama2=='効果なし2' %} selected {% endif %}>その他(スコアアップ以外)</option>
+                </select>
+            </div>
+            <div>ミタマ3：
+                <select name="mitama3">
+                    <option value='効果なし'>カグラエフェクトの効果を選択</option>
+                    <optgroup label="SSR Lv3(5凸以上)">
+                        <option value='10秒ごとに52%の確率で9秒間ノーツスコア+30%'{% if mitama3=='10秒ごとに52%の確率で9秒間ノーツスコア+30%' %} selected {% endif %}>10秒ごとに52%の確率で9秒間ノーツスコア+30%</option>
+                        <option value='8秒ごとに63%の確率で7.2秒間、直前に発動した他のカグラエフェクトの効果を発動する'{% if mitama3=='8秒ごとに63%の確率で7.2秒間、直前に発動した他のカグラエフェクトの効果を発動する' %} selected {% endif %}>8秒ごとに63%の確率で7.2秒間、直前に発動した他のカグラエフェクトの効果を発動する</option>
+                        <option value='7秒ごとに63%の確率で6.3秒間、直前に発動した他のカグラエフェクトの効果を発動する'{% if mitama3=='7秒ごとに63%の確率で6.3秒間、直前に発動した他のカグラエフェクトの効果を発動する' %} selected {% endif %}>7秒ごとに63%の確率で6.3秒間、直前に発動した他のカグラエフェクトの効果を発動する</option>
+                        <option value='6秒ごとに62%の確率で5.4秒間、直前に発動した他のカグラエフェクトの効果を発動する'{% if mitama3=='6秒ごとに62%の確率で5.4秒間、直前に発動した他のカグラエフェクトの効果を発動する' %} selected {% endif %}>6秒ごとに62%の確率で5.4秒間、直前に発動した他のカグラエフェクトの効果を発動する</option>
+                        <option value='8秒ごとに63%の確率で7.2秒間ノーツスコア+20%、BRILLIANTならさらにノーツスコア+20%'{% if mitama3=='8秒ごとに63%の確率で7.2秒間ノーツスコア+20%、BRILLIANTならさらにノーツスコア+20%' %} selected {% endif %}>8秒ごとに63%の確率で7.2秒間ノーツスコア+20%、BRILLIANTならさらにノーツスコア+20%</option>
+                        <option value='7秒ごとに63%の確率で6.3秒間ノーツスコア+20%、BRILLIANTならさらにノーツスコア+20%'{% if mitama3=='7秒ごとに63%の確率で6.3秒間ノーツスコア+20%、BRILLIANTならさらにノーツスコア+20%' %} selected {% endif %}>7秒ごとに63%の確率で6.3秒間ノーツスコア+20%、BRILLIANTならさらにノーツスコア+20%</option>
+                        <option value='6秒ごとに62%の確率で5.4秒間ノーツスコア+20%、BRILLIANTならさらにノーツスコア+20%'{% if mitama3=='6秒ごとに62%の確率で5.4秒間ノーツスコア+20%、BRILLIANTならさらにノーツスコア+20%' %} selected {% endif %}>6秒ごとに62%の確率で5.4秒間ノーツスコア+20%、BRILLIANTならさらにノーツスコア+20%</option>
+                        <option value='5秒ごとに61%の確率で4.5秒間ノーツスコア+20%、BRILLIANTならさらにノーツスコア+20%'{% if mitama3=='5秒ごとに61%の確率で4.5秒間ノーツスコア+20%、BRILLIANTならさらにノーツスコア+20%' %} selected {% endif %}>5秒ごとに61%の確率で4.5秒間ノーツスコア+20%、BRILLIANTならさらにノーツスコア+20%</option>
+                        <option value='8秒ごとに63%の確率で7.2秒間ノーツスコア+20%、100コンボ以上の時はさらにノーツスコア+20%'{% if mitama3=='8秒ごとに63%の確率で7.2秒間ノーツスコア+20%、100コンボ以上の時はさらにノーツスコア+20%' %} selected {% endif %}>8秒ごとに63%の確率で7.2秒間ノーツスコア+20%、100コンボ以上の時はさらにノーツスコア+20%</option>
+                        <option value='7秒ごとに63%の確率で6.3秒間ノーツスコア+20%、100コンボ以上の時はさらにノーツスコア+20%'{% if mitama3=='7秒ごとに63%の確率で6.3秒間ノーツスコア+20%、100コンボ以上の時はさらにノーツスコア+20%' %} selected {% endif %}>7秒ごとに63%の確率で6.3秒間ノーツスコア+20%、100コンボ以上の時はさらにノーツスコア+20%</option>
+                        <option value='6秒ごとに62%の確率で5.4秒間ノーツスコア+20%、100コンボ以上の時はさらにノーツスコア+20%'{% if mitama3=='6秒ごとに62%の確率で5.4秒間ノーツスコア+20%、100コンボ以上の時はさらにノーツスコア+20%' %} selected {% endif %}>6秒ごとに62%の確率で5.4秒間ノーツスコア+20%、100コンボ以上の時はさらにノーツスコア+20%</option>
+                        <option value='5秒ごとに61%の確率で4.5秒間ノーツスコア+20%、100コンボ以上の時はさらにノーツスコア+20%'{% if mitama3=='5秒ごとに61%の確率で4.5秒間ノーツスコア+20%、100コンボ以上の時はさらにノーツスコア+20%' %} selected {% endif %}>5秒ごとに61%の確率で4.5秒間ノーツスコア+20%、100コンボ以上の時はさらにノーツスコア+20%</option>
+                        <option value='7秒ごとに63%の確率で6.3秒間ノーツスコア+20%、~編成時はさらにノーツスコア+10%'{% if mitama3=='7秒ごとに63%の確率で6.3秒間ノーツスコア+20%、~編成時はさらにノーツスコア+10%' %} selected {% endif %}>7秒ごとに63%の確率で6.3秒間ノーツスコア+20%、~編成時はさらにノーツスコア+10%</option>
+                        <option value='5秒ごとに61%の確率で4.5秒間ノーツスコア+20%、~編成時はさらにノーツスコア+10%'{% if mitama3=='5秒ごとに61%の確率で4.5秒間ノーツスコア+20%、~編成時はさらにノーツスコア+10%' %} selected {% endif %}>5秒ごとに61%の確率で4.5秒間ノーツスコア+20%、~編成時はさらにノーツスコア+10%</option>
+                        <option value='8秒ごとに63%の確率で7.2秒間ノーツスコア+25%'{% if mitama3=='8秒ごとに63%の確率で7.2秒間ノーツスコア+25%' %} selected {% endif %}>8秒ごとに63%の確率で7.2秒間ノーツスコア+25%</option>
+                        <option value='7秒ごとに63%の確率で6.3秒間ノーツスコア+25%'{% if mitama3=='7秒ごとに63%の確率で6.3秒間ノーツスコア+25%' %} selected {% endif %}>7秒ごとに63%の確率で6.3秒間ノーツスコア+25%</option>
+                        <option value='6秒ごとに62%の確率で5.4秒間ノーツスコア+25%'{% if mitama3=='6秒ごとに62%の確率で5.4秒間ノーツスコア+25%' %} selected {% endif %}>6秒ごとに62%の確率で5.4秒間ノーツスコア+25%</option>
+                        <option value='5秒ごとに61%の確率で4.5秒間ノーツスコア+25%'{% if mitama3=='5秒ごとに61%の確率で4.5秒間ノーツスコア+25%' %} selected {% endif %}>5秒ごとに61%の確率で4.5秒間ノーツスコア+25%</option>
+                    </optgroup>
+                    <optgroup label="SSR Lv2(3凸以上)">
+                        <option value='10秒ごとに42%の確率で7秒間ノーツスコア+28%'{% if mitama3=='10秒ごとに42%の確率で7秒間ノーツスコア+28%' %} selected {% endif %}>10秒ごとに42%の確率で7秒間ノーツスコア+28%</option>
+                        <option value='7秒ごとに53%の確率で4.9秒間ノーツスコア+18%、~編成時はさらにノーツスコア+8%'{% if mitama3=='7秒ごとに53%の確率で4.9秒間ノーツスコア+18%、~編成時はさらにノーツスコア+8%' %} selected {% endif %}>7秒ごとに53%の確率で4.9秒間ノーツスコア+18%、~編成時はさらにノーツスコア+8%</option>
+                        <option value='5秒ごとに51%の確率で3.5秒間ノーツスコア+18%、~編成時はさらにノーツスコア+8%'{% if mitama3=='5秒ごとに51%の確率で3.5秒間ノーツスコア+18%、~編成時はさらにノーツスコア+8%' %} selected {% endif %}>5秒ごとに51%の確率で3.5秒間ノーツスコア+18%、~編成時はさらにノーツスコア+8%</option>
+                        <option value='8秒ごとに53%の確率で5.6秒間ノーツスコア+23%'{% if mitama3=='8秒ごとに53%の確率で5.6秒間ノーツスコア+23%' %} selected {% endif %}>8秒ごとに53%の確率で5.6秒間ノーツスコア+23%</option>
+                        <option value='7秒ごとに53%の確率で4.9秒間ノーツスコア+23%'{% if mitama3=='7秒ごとに53%の確率で4.9秒間ノーツスコア+23%' %} selected {% endif %}>7秒ごとに53%の確率で4.9秒間ノーツスコア+23%</option>
+                        <option value='6秒ごとに52%の確率で4.2秒間ノーツスコア+23%'{% if mitama3=='6秒ごとに52%の確率で4.2秒間ノーツスコア+23%' %} selected {% endif %}>6秒ごとに52%の確率で4.2秒間ノーツスコア+23%</option>
+                        <option value='5秒ごとに51%の確率で3.5秒間ノーツスコア+23%'{% if mitama3=='5秒ごとに51%の確率で3.5秒間ノーツスコア+23%' %} selected {% endif %}>5秒ごとに51%の確率で3.5秒間ノーツスコア+23%</option>
+                    </optgroup>
+                    <optgroup label="文化祭霊夢">
+                        <option value='6秒ごとに62%の確率で5.4秒間ノーツスコア+22%'{% if mitama3=='6秒ごとに62%の確率で5.4秒間ノーツスコア+22%' %} selected {% endif %}>6秒ごとに62%の確率で5.4秒間ノーツスコア+22%</option>
+                    </optgroup>
+                    <optgroup label="SR">
+                        <option value='4秒毎に67%の確率で3.8秒間ノーツスコア+20%、対象ステージの場合はさらにノーツスコア+30%'{% if mitama3=='4秒毎に67%の確率で3.8秒間ノーツスコア+20%、対象ステージの場合はさらにノーツスコア+30%' %} selected {% endif %}>4秒毎に67%の確率で3.8秒間ノーツスコア+20%、対象ステージの場合はさらにノーツスコア+30%</option>
+                        <option value='8秒ごとに63%の確率で7.2秒間ノーツスコア+15%、BRILLIANTならさらにノーツスコア+15%'{% if mitama3=='8秒ごとに63%の確率で7.2秒間ノーツスコア+15%、BRILLIANTならさらにノーツスコア+15%' %} selected {% endif %}>8秒ごとに63%の確率で7.2秒間ノーツスコア+15%、BRILLIANTならさらにノーツスコア+15%</option>
+                        <option value='7秒ごとに63%の確率で6.3秒間ノーツスコア+15%、BRILLIANTならさらにノーツスコア+15%'{% if mitama3=='7秒ごとに63%の確率で6.3秒間ノーツスコア+15%、BRILLIANTならさらにノーツスコア+15%' %} selected {% endif %}>7秒ごとに63%の確率で6.3秒間ノーツスコア+15%、BRILLIANTならさらにノーツスコア+15%</option>
+                        <option value='6秒ごとに62%の確率で5.4秒間ノーツスコア+15%、BRILLIANTならさらにノーツスコア+15%'{% if mitama3=='6秒ごとに62%の確率で5.4秒間ノーツスコア+15%、BRILLIANTならさらにノーツスコア+15%' %} selected {% endif %}>6秒ごとに62%の確率で5.4秒間ノーツスコア+15%、BRILLIANTならさらにノーツスコア+15%</option>
+                        <option value='8秒ごとに63%の確率で7.2秒間ノーツスコア+15%、100コンボ以上の時はさらにノーツスコア+15%'{% if mitama3=='8秒ごとに63%の確率で7.2秒間ノーツスコア+15%、100コンボ以上の時はさらにノーツスコア+15%' %} selected {% endif %}>8秒ごとに63%の確率で7.2秒間ノーツスコア+15%、100コンボ以上の時はさらにノーツスコア+15%</option>
+                        <option value='7秒ごとに63%の確率で6.3秒間ノーツスコア+15%、100コンボ以上の時はさらにノーツスコア+15%'{% if mitama3=='7秒ごとに63%の確率で6.3秒間ノーツスコア+15%、100コンボ以上の時はさらにノーツスコア+15%' %} selected {% endif %}>7秒ごとに63%の確率で6.3秒間ノーツスコア+15%、100コンボ以上の時はさらにノーツスコア+15%</option>
+                        <option value='6秒ごとに62%の確率で5.4秒間ノーツスコア+15%、100コンボ以上の時はさらにノーツスコア+15%'{% if mitama3=='6秒ごとに62%の確率で5.4秒間ノーツスコア+15%、100コンボ以上の時はさらにノーツスコア+15%' %} selected {% endif %}>6秒ごとに62%の確率で5.4秒間ノーツスコア+15%、100コンボ以上の時はさらにノーツスコア+15%</option>
+                        <option value='8秒ごとに63%の確率で7.2秒間ノーツスコア+20%'{% if mitama3=='8秒ごとに63%の確率で7.2秒間ノーツスコア+20%' %} selected {% endif %}>8秒ごとに63%の確率で7.2秒間ノーツスコア+20%</option>
+                        <option value='7秒ごとに63%の確率で6.3秒間ノーツスコア+20%'{% if mitama3=='7秒ごとに63%の確率で6.3秒間ノーツスコア+20%' %} selected {% endif %}>7秒ごとに63%の確率で6.3秒間ノーツスコア+20%</option>
+                        <option value='6秒ごとに62%の確率で5.4秒間ノーツスコア+20%'{% if mitama3=='6秒ごとに62%の確率で5.4秒間ノーツスコア+20%' %} selected {% endif %}>6秒ごとに62%の確率で5.4秒間ノーツスコア+20%</option>
+                    </optgroup>
+                    <option value='効果なし2'{% if mitama3=='効果なし2' %} selected {% endif %}>その他(スコアアップ以外)</option>
+                </select>
+            </div>
+            <div>ミタマ4：
+                <select name="mitama4">
+                    <option value='効果なし'>カグラエフェクトの効果を選択</option>
+                    <optgroup label="SSR Lv3(5凸以上)">
+                        <option value='10秒ごとに52%の確率で9秒間ノーツスコア+30%'{% if mitama4=='10秒ごとに52%の確率で9秒間ノーツスコア+30%' %} selected {% endif %}>10秒ごとに52%の確率で9秒間ノーツスコア+30%</option>
+                        <option value='8秒ごとに63%の確率で7.2秒間、直前に発動した他のカグラエフェクトの効果を発動する'{% if mitama4=='8秒ごとに63%の確率で7.2秒間、直前に発動した他のカグラエフェクトの効果を発動する' %} selected {% endif %}>8秒ごとに63%の確率で7.2秒間、直前に発動した他のカグラエフェクトの効果を発動する</option>
+                        <option value='7秒ごとに63%の確率で6.3秒間、直前に発動した他のカグラエフェクトの効果を発動する'{% if mitama4=='7秒ごとに63%の確率で6.3秒間、直前に発動した他のカグラエフェクトの効果を発動する' %} selected {% endif %}>7秒ごとに63%の確率で6.3秒間、直前に発動した他のカグラエフェクトの効果を発動する</option>
+                        <option value='6秒ごとに62%の確率で5.4秒間、直前に発動した他のカグラエフェクトの効果を発動する'{% if mitama4=='6秒ごとに62%の確率で5.4秒間、直前に発動した他のカグラエフェクトの効果を発動する' %} selected {% endif %}>6秒ごとに62%の確率で5.4秒間、直前に発動した他のカグラエフェクトの効果を発動する</option>
+                        <option value='8秒ごとに63%の確率で7.2秒間ノーツスコア+20%、BRILLIANTならさらにノーツスコア+20%'{% if mitama4=='8秒ごとに63%の確率で7.2秒間ノーツスコア+20%、BRILLIANTならさらにノーツスコア+20%' %} selected {% endif %}>8秒ごとに63%の確率で7.2秒間ノーツスコア+20%、BRILLIANTならさらにノーツスコア+20%</option>
+                        <option value='7秒ごとに63%の確率で6.3秒間ノーツスコア+20%、BRILLIANTならさらにノーツスコア+20%'{% if mitama4=='7秒ごとに63%の確率で6.3秒間ノーツスコア+20%、BRILLIANTならさらにノーツスコア+20%' %} selected {% endif %}>7秒ごとに63%の確率で6.3秒間ノーツスコア+20%、BRILLIANTならさらにノーツスコア+20%</option>
+                        <option value='6秒ごとに62%の確率で5.4秒間ノーツスコア+20%、BRILLIANTならさらにノーツスコア+20%'{% if mitama4=='6秒ごとに62%の確率で5.4秒間ノーツスコア+20%、BRILLIANTならさらにノーツスコア+20%' %} selected {% endif %}>6秒ごとに62%の確率で5.4秒間ノーツスコア+20%、BRILLIANTならさらにノーツスコア+20%</option>
+                        <option value='5秒ごとに61%の確率で4.5秒間ノーツスコア+20%、BRILLIANTならさらにノーツスコア+20%'{% if mitama4=='5秒ごとに61%の確率で4.5秒間ノーツスコア+20%、BRILLIANTならさらにノーツスコア+20%' %} selected {% endif %}>5秒ごとに61%の確率で4.5秒間ノーツスコア+20%、BRILLIANTならさらにノーツスコア+20%</option>
+                        <option value='8秒ごとに63%の確率で7.2秒間ノーツスコア+20%、100コンボ以上の時はさらにノーツスコア+20%'{% if mitama4=='8秒ごとに63%の確率で7.2秒間ノーツスコア+20%、100コンボ以上の時はさらにノーツスコア+20%' %} selected {% endif %}>8秒ごとに63%の確率で7.2秒間ノーツスコア+20%、100コンボ以上の時はさらにノーツスコア+20%</option>
+                        <option value='7秒ごとに63%の確率で6.3秒間ノーツスコア+20%、100コンボ以上の時はさらにノーツスコア+20%'{% if mitama4=='7秒ごとに63%の確率で6.3秒間ノーツスコア+20%、100コンボ以上の時はさらにノーツスコア+20%' %} selected {% endif %}>7秒ごとに63%の確率で6.3秒間ノーツスコア+20%、100コンボ以上の時はさらにノーツスコア+20%</option>
+                        <option value='6秒ごとに62%の確率で5.4秒間ノーツスコア+20%、100コンボ以上の時はさらにノーツスコア+20%'{% if mitama4=='6秒ごとに62%の確率で5.4秒間ノーツスコア+20%、100コンボ以上の時はさらにノーツスコア+20%' %} selected {% endif %}>6秒ごとに62%の確率で5.4秒間ノーツスコア+20%、100コンボ以上の時はさらにノーツスコア+20%</option>
+                        <option value='5秒ごとに61%の確率で4.5秒間ノーツスコア+20%、100コンボ以上の時はさらにノーツスコア+20%'{% if mitama4=='5秒ごとに61%の確率で4.5秒間ノーツスコア+20%、100コンボ以上の時はさらにノーツスコア+20%' %} selected {% endif %}>5秒ごとに61%の確率で4.5秒間ノーツスコア+20%、100コンボ以上の時はさらにノーツスコア+20%</option>
+                        <option value='7秒ごとに63%の確率で6.3秒間ノーツスコア+20%、~編成時はさらにノーツスコア+10%'{% if mitama4=='7秒ごとに63%の確率で6.3秒間ノーツスコア+20%、~編成時はさらにノーツスコア+10%' %} selected {% endif %}>7秒ごとに63%の確率で6.3秒間ノーツスコア+20%、~編成時はさらにノーツスコア+10%</option>
+                        <option value='5秒ごとに61%の確率で4.5秒間ノーツスコア+20%、~編成時はさらにノーツスコア+10%'{% if mitama4=='5秒ごとに61%の確率で4.5秒間ノーツスコア+20%、~編成時はさらにノーツスコア+10%' %} selected {% endif %}>5秒ごとに61%の確率で4.5秒間ノーツスコア+20%、~編成時はさらにノーツスコア+10%</option>
+                        <option value='8秒ごとに63%の確率で7.2秒間ノーツスコア+25%'{% if mitama4=='8秒ごとに63%の確率で7.2秒間ノーツスコア+25%' %} selected {% endif %}>8秒ごとに63%の確率で7.2秒間ノーツスコア+25%</option>
+                        <option value='7秒ごとに63%の確率で6.3秒間ノーツスコア+25%'{% if mitama4=='7秒ごとに63%の確率で6.3秒間ノーツスコア+25%' %} selected {% endif %}>7秒ごとに63%の確率で6.3秒間ノーツスコア+25%</option>
+                        <option value='6秒ごとに62%の確率で5.4秒間ノーツスコア+25%'{% if mitama4=='6秒ごとに62%の確率で5.4秒間ノーツスコア+25%' %} selected {% endif %}>6秒ごとに62%の確率で5.4秒間ノーツスコア+25%</option>
+                        <option value='5秒ごとに61%の確率で4.5秒間ノーツスコア+25%'{% if mitama4=='5秒ごとに61%の確率で4.5秒間ノーツスコア+25%' %} selected {% endif %}>5秒ごとに61%の確率で4.5秒間ノーツスコア+25%</option>
+                    </optgroup>
+                    <optgroup label="SSR Lv2(3凸以上)">
+                        <option value='10秒ごとに42%の確率で7秒間ノーツスコア+28%'{% if mitama4=='10秒ごとに42%の確率で7秒間ノーツスコア+28%' %} selected {% endif %}>10秒ごとに42%の確率で7秒間ノーツスコア+28%</option>
+                        <option value='7秒ごとに53%の確率で4.9秒間ノーツスコア+18%、~編成時はさらにノーツスコア+8%'{% if mitama4=='7秒ごとに53%の確率で4.9秒間ノーツスコア+18%、~編成時はさらにノーツスコア+8%' %} selected {% endif %}>7秒ごとに53%の確率で4.9秒間ノーツスコア+18%、~編成時はさらにノーツスコア+8%</option>
+                        <option value='5秒ごとに51%の確率で3.5秒間ノーツスコア+18%、~編成時はさらにノーツスコア+8%'{% if mitama4=='5秒ごとに51%の確率で3.5秒間ノーツスコア+18%、~編成時はさらにノーツスコア+8%' %} selected {% endif %}>5秒ごとに51%の確率で3.5秒間ノーツスコア+18%、~編成時はさらにノーツスコア+8%</option>
+                        <option value='8秒ごとに53%の確率で5.6秒間ノーツスコア+23%'{% if mitama4=='8秒ごとに53%の確率で5.6秒間ノーツスコア+23%' %} selected {% endif %}>8秒ごとに53%の確率で5.6秒間ノーツスコア+23%</option>
+                        <option value='7秒ごとに53%の確率で4.9秒間ノーツスコア+23%'{% if mitama4=='7秒ごとに53%の確率で4.9秒間ノーツスコア+23%' %} selected {% endif %}>7秒ごとに53%の確率で4.9秒間ノーツスコア+23%</option>
+                        <option value='6秒ごとに52%の確率で4.2秒間ノーツスコア+23%'{% if mitama4=='6秒ごとに52%の確率で4.2秒間ノーツスコア+23%' %} selected {% endif %}>6秒ごとに52%の確率で4.2秒間ノーツスコア+23%</option>
+                        <option value='5秒ごとに51%の確率で3.5秒間ノーツスコア+23%'{% if mitama4=='5秒ごとに51%の確率で3.5秒間ノーツスコア+23%' %} selected {% endif %}>5秒ごとに51%の確率で3.5秒間ノーツスコア+23%</option>
+                    </optgroup>
+                    <optgroup label="文化祭霊夢">
+                        <option value='6秒ごとに62%の確率で5.4秒間ノーツスコア+22%'{% if mitama4=='6秒ごとに62%の確率で5.4秒間ノーツスコア+22%' %} selected {% endif %}>6秒ごとに62%の確率で5.4秒間ノーツスコア+22%</option>
+                    </optgroup>
+                    <optgroup label="SR">
+                        <option value='4秒毎に67%の確率で3.8秒間ノーツスコア+20%、対象ステージの場合はさらにノーツスコア+30%'{% if mitama4=='4秒毎に67%の確率で3.8秒間ノーツスコア+20%、対象ステージの場合はさらにノーツスコア+30%' %} selected {% endif %}>4秒毎に67%の確率で3.8秒間ノーツスコア+20%、対象ステージの場合はさらにノーツスコア+30%</option>
+                        <option value='8秒ごとに63%の確率で7.2秒間ノーツスコア+15%、BRILLIANTならさらにノーツスコア+15%'{% if mitama4=='8秒ごとに63%の確率で7.2秒間ノーツスコア+15%、BRILLIANTならさらにノーツスコア+15%' %} selected {% endif %}>8秒ごとに63%の確率で7.2秒間ノーツスコア+15%、BRILLIANTならさらにノーツスコア+15%</option>
+                        <option value='7秒ごとに63%の確率で6.3秒間ノーツスコア+15%、BRILLIANTならさらにノーツスコア+15%'{% if mitama4=='7秒ごとに63%の確率で6.3秒間ノーツスコア+15%、BRILLIANTならさらにノーツスコア+15%' %} selected {% endif %}>7秒ごとに63%の確率で6.3秒間ノーツスコア+15%、BRILLIANTならさらにノーツスコア+15%</option>
+                        <option value='6秒ごとに62%の確率で5.4秒間ノーツスコア+15%、BRILLIANTならさらにノーツスコア+15%'{% if mitama4=='6秒ごとに62%の確率で5.4秒間ノーツスコア+15%、BRILLIANTならさらにノーツスコア+15%' %} selected {% endif %}>6秒ごとに62%の確率で5.4秒間ノーツスコア+15%、BRILLIANTならさらにノーツスコア+15%</option>
+                        <option value='8秒ごとに63%の確率で7.2秒間ノーツスコア+15%、100コンボ以上の時はさらにノーツスコア+15%'{% if mitama4=='8秒ごとに63%の確率で7.2秒間ノーツスコア+15%、100コンボ以上の時はさらにノーツスコア+15%' %} selected {% endif %}>8秒ごとに63%の確率で7.2秒間ノーツスコア+15%、100コンボ以上の時はさらにノーツスコア+15%</option>
+                        <option value='7秒ごとに63%の確率で6.3秒間ノーツスコア+15%、100コンボ以上の時はさらにノーツスコア+15%'{% if mitama4=='7秒ごとに63%の確率で6.3秒間ノーツスコア+15%、100コンボ以上の時はさらにノーツスコア+15%' %} selected {% endif %}>7秒ごとに63%の確率で6.3秒間ノーツスコア+15%、100コンボ以上の時はさらにノーツスコア+15%</option>
+                        <option value='6秒ごとに62%の確率で5.4秒間ノーツスコア+15%、100コンボ以上の時はさらにノーツスコア+15%'{% if mitama4=='6秒ごとに62%の確率で5.4秒間ノーツスコア+15%、100コンボ以上の時はさらにノーツスコア+15%' %} selected {% endif %}>6秒ごとに62%の確率で5.4秒間ノーツスコア+15%、100コンボ以上の時はさらにノーツスコア+15%</option>
+                        <option value='8秒ごとに63%の確率で7.2秒間ノーツスコア+20%'{% if mitama4=='8秒ごとに63%の確率で7.2秒間ノーツスコア+20%' %} selected {% endif %}>8秒ごとに63%の確率で7.2秒間ノーツスコア+20%</option>
+                        <option value='7秒ごとに63%の確率で6.3秒間ノーツスコア+20%'{% if mitama4=='7秒ごとに63%の確率で6.3秒間ノーツスコア+20%' %} selected {% endif %}>7秒ごとに63%の確率で6.3秒間ノーツスコア+20%</option>
+                        <option value='6秒ごとに62%の確率で5.4秒間ノーツスコア+20%'{% if mitama4=='6秒ごとに62%の確率で5.4秒間ノーツスコア+20%' %} selected {% endif %}>6秒ごとに62%の確率で5.4秒間ノーツスコア+20%</option>
+                    </optgroup>
+                    <option value='効果なし2'{% if mitama4=='効果なし2' %} selected {% endif %}>その他(スコアアップ以外)</option>
+                </select>
+            </div>
+            <div>ミタマ5：
+                <select name="mitama5">
+                    <option value='効果なし'>カグラエフェクトの効果を選択</option>
+                    <optgroup label="SSR Lv3(5凸以上)">
+                        <option value='10秒ごとに52%の確率で9秒間ノーツスコア+30%'{% if mitama5=='10秒ごとに52%の確率で9秒間ノーツスコア+30%' %} selected {% endif %}>10秒ごとに52%の確率で9秒間ノーツスコア+30%</option>
+                        <option value='8秒ごとに63%の確率で7.2秒間、直前に発動した他のカグラエフェクトの効果を発動する'{% if mitama5=='8秒ごとに63%の確率で7.2秒間、直前に発動した他のカグラエフェクトの効果を発動する' %} selected {% endif %}>8秒ごとに63%の確率で7.2秒間、直前に発動した他のカグラエフェクトの効果を発動する</option>
+                        <option value='7秒ごとに63%の確率で6.3秒間、直前に発動した他のカグラエフェクトの効果を発動する'{% if mitama5=='7秒ごとに63%の確率で6.3秒間、直前に発動した他のカグラエフェクトの効果を発動する' %} selected {% endif %}>7秒ごとに63%の確率で6.3秒間、直前に発動した他のカグラエフェクトの効果を発動する</option>
+                        <option value='6秒ごとに62%の確率で5.4秒間、直前に発動した他のカグラエフェクトの効果を発動する'{% if mitama5=='6秒ごとに62%の確率で5.4秒間、直前に発動した他のカグラエフェクトの効果を発動する' %} selected {% endif %}>6秒ごとに62%の確率で5.4秒間、直前に発動した他のカグラエフェクトの効果を発動する</option>
+                        <option value='8秒ごとに63%の確率で7.2秒間ノーツスコア+20%、BRILLIANTならさらにノーツスコア+20%'{% if mitama5=='8秒ごとに63%の確率で7.2秒間ノーツスコア+20%、BRILLIANTならさらにノーツスコア+20%' %} selected {% endif %}>8秒ごとに63%の確率で7.2秒間ノーツスコア+20%、BRILLIANTならさらにノーツスコア+20%</option>
+                        <option value='7秒ごとに63%の確率で6.3秒間ノーツスコア+20%、BRILLIANTならさらにノーツスコア+20%'{% if mitama5=='7秒ごとに63%の確率で6.3秒間ノーツスコア+20%、BRILLIANTならさらにノーツスコア+20%' %} selected {% endif %}>7秒ごとに63%の確率で6.3秒間ノーツスコア+20%、BRILLIANTならさらにノーツスコア+20%</option>
+                        <option value='6秒ごとに62%の確率で5.4秒間ノーツスコア+20%、BRILLIANTならさらにノーツスコア+20%'{% if mitama5=='6秒ごとに62%の確率で5.4秒間ノーツスコア+20%、BRILLIANTならさらにノーツスコア+20%' %} selected {% endif %}>6秒ごとに62%の確率で5.4秒間ノーツスコア+20%、BRILLIANTならさらにノーツスコア+20%</option>
+                        <option value='5秒ごとに61%の確率で4.5秒間ノーツスコア+20%、BRILLIANTならさらにノーツスコア+20%'{% if mitama5=='5秒ごとに61%の確率で4.5秒間ノーツスコア+20%、BRILLIANTならさらにノーツスコア+20%' %} selected {% endif %}>5秒ごとに61%の確率で4.5秒間ノーツスコア+20%、BRILLIANTならさらにノーツスコア+20%</option>
+                        <option value='8秒ごとに63%の確率で7.2秒間ノーツスコア+20%、100コンボ以上の時はさらにノーツスコア+20%'{% if mitama5=='8秒ごとに63%の確率で7.2秒間ノーツスコア+20%、100コンボ以上の時はさらにノーツスコア+20%' %} selected {% endif %}>8秒ごとに63%の確率で7.2秒間ノーツスコア+20%、100コンボ以上の時はさらにノーツスコア+20%</option>
+                        <option value='7秒ごとに63%の確率で6.3秒間ノーツスコア+20%、100コンボ以上の時はさらにノーツスコア+20%'{% if mitama5=='7秒ごとに63%の確率で6.3秒間ノーツスコア+20%、100コンボ以上の時はさらにノーツスコア+20%' %} selected {% endif %}>7秒ごとに63%の確率で6.3秒間ノーツスコア+20%、100コンボ以上の時はさらにノーツスコア+20%</option>
+                        <option value='6秒ごとに62%の確率で5.4秒間ノーツスコア+20%、100コンボ以上の時はさらにノーツスコア+20%'{% if mitama5=='6秒ごとに62%の確率で5.4秒間ノーツスコア+20%、100コンボ以上の時はさらにノーツスコア+20%' %} selected {% endif %}>6秒ごとに62%の確率で5.4秒間ノーツスコア+20%、100コンボ以上の時はさらにノーツスコア+20%</option>
+                        <option value='5秒ごとに61%の確率で4.5秒間ノーツスコア+20%、100コンボ以上の時はさらにノーツスコア+20%'{% if mitama5=='5秒ごとに61%の確率で4.5秒間ノーツスコア+20%、100コンボ以上の時はさらにノーツスコア+20%' %} selected {% endif %}>5秒ごとに61%の確率で4.5秒間ノーツスコア+20%、100コンボ以上の時はさらにノーツスコア+20%</option>
+                        <option value='7秒ごとに63%の確率で6.3秒間ノーツスコア+20%、~編成時はさらにノーツスコア+10%'{% if mitama5=='7秒ごとに63%の確率で6.3秒間ノーツスコア+20%、~編成時はさらにノーツスコア+10%' %} selected {% endif %}>7秒ごとに63%の確率で6.3秒間ノーツスコア+20%、~編成時はさらにノーツスコア+10%</option>
+                        <option value='5秒ごとに61%の確率で4.5秒間ノーツスコア+20%、~編成時はさらにノーツスコア+10%'{% if mitama5=='5秒ごとに61%の確率で4.5秒間ノーツスコア+20%、~編成時はさらにノーツスコア+10%' %} selected {% endif %}>5秒ごとに61%の確率で4.5秒間ノーツスコア+20%、~編成時はさらにノーツスコア+10%</option>
+                        <option value='8秒ごとに63%の確率で7.2秒間ノーツスコア+25%'{% if mitama5=='8秒ごとに63%の確率で7.2秒間ノーツスコア+25%' %} selected {% endif %}>8秒ごとに63%の確率で7.2秒間ノーツスコア+25%</option>
+                        <option value='7秒ごとに63%の確率で6.3秒間ノーツスコア+25%'{% if mitama5=='7秒ごとに63%の確率で6.3秒間ノーツスコア+25%' %} selected {% endif %}>7秒ごとに63%の確率で6.3秒間ノーツスコア+25%</option>
+                        <option value='6秒ごとに62%の確率で5.4秒間ノーツスコア+25%'{% if mitama5=='6秒ごとに62%の確率で5.4秒間ノーツスコア+25%' %} selected {% endif %}>6秒ごとに62%の確率で5.4秒間ノーツスコア+25%</option>
+                        <option value='5秒ごとに61%の確率で4.5秒間ノーツスコア+25%'{% if mitama5=='5秒ごとに61%の確率で4.5秒間ノーツスコア+25%' %} selected {% endif %}>5秒ごとに61%の確率で4.5秒間ノーツスコア+25%</option>
+                    </optgroup>
+                    <optgroup label="SSR Lv2(3凸以上)">
+                        <option value='10秒ごとに42%の確率で7秒間ノーツスコア+28%'{% if mitama5=='10秒ごとに42%の確率で7秒間ノーツスコア+28%' %} selected {% endif %}>10秒ごとに42%の確率で7秒間ノーツスコア+28%</option>
+                        <option value='7秒ごとに53%の確率で4.9秒間ノーツスコア+18%、~編成時はさらにノーツスコア+8%'{% if mitama5=='7秒ごとに53%の確率で4.9秒間ノーツスコア+18%、~編成時はさらにノーツスコア+8%' %} selected {% endif %}>7秒ごとに53%の確率で4.9秒間ノーツスコア+18%、~編成時はさらにノーツスコア+8%</option>
+                        <option value='5秒ごとに51%の確率で3.5秒間ノーツスコア+18%、~編成時はさらにノーツスコア+8%'{% if mitama5=='5秒ごとに51%の確率で3.5秒間ノーツスコア+18%、~編成時はさらにノーツスコア+8%' %} selected {% endif %}>5秒ごとに51%の確率で3.5秒間ノーツスコア+18%、~編成時はさらにノーツスコア+8%</option>
+                        <option value='8秒ごとに53%の確率で5.6秒間ノーツスコア+23%'{% if mitama5=='8秒ごとに53%の確率で5.6秒間ノーツスコア+23%' %} selected {% endif %}>8秒ごとに53%の確率で5.6秒間ノーツスコア+23%</option>
+                        <option value='7秒ごとに53%の確率で4.9秒間ノーツスコア+23%'{% if mitama5=='7秒ごとに53%の確率で4.9秒間ノーツスコア+23%' %} selected {% endif %}>7秒ごとに53%の確率で4.9秒間ノーツスコア+23%</option>
+                        <option value='6秒ごとに52%の確率で4.2秒間ノーツスコア+23%'{% if mitama5=='6秒ごとに52%の確率で4.2秒間ノーツスコア+23%' %} selected {% endif %}>6秒ごとに52%の確率で4.2秒間ノーツスコア+23%</option>
+                        <option value='5秒ごとに51%の確率で3.5秒間ノーツスコア+23%'{% if mitama5=='5秒ごとに51%の確率で3.5秒間ノーツスコア+23%' %} selected {% endif %}>5秒ごとに51%の確率で3.5秒間ノーツスコア+23%</option>
+                    </optgroup>
+                    <optgroup label="文化祭霊夢">
+                        <option value='6秒ごとに62%の確率で5.4秒間ノーツスコア+22%'{% if mitama5=='6秒ごとに62%の確率で5.4秒間ノーツスコア+22%' %} selected {% endif %}>6秒ごとに62%の確率で5.4秒間ノーツスコア+22%</option>
+                    </optgroup>
+                    <optgroup label="SR">
+                        <option value='4秒毎に67%の確率で3.8秒間ノーツスコア+20%、対象ステージの場合はさらにノーツスコア+30%'{% if mitama5=='4秒毎に67%の確率で3.8秒間ノーツスコア+20%、対象ステージの場合はさらにノーツスコア+30%' %} selected {% endif %}>4秒毎に67%の確率で3.8秒間ノーツスコア+20%、対象ステージの場合はさらにノーツスコア+30%</option>
+                        <option value='8秒ごとに63%の確率で7.2秒間ノーツスコア+15%、BRILLIANTならさらにノーツスコア+15%'{% if mitama5=='8秒ごとに63%の確率で7.2秒間ノーツスコア+15%、BRILLIANTならさらにノーツスコア+15%' %} selected {% endif %}>8秒ごとに63%の確率で7.2秒間ノーツスコア+15%、BRILLIANTならさらにノーツスコア+15%</option>
+                        <option value='7秒ごとに63%の確率で6.3秒間ノーツスコア+15%、BRILLIANTならさらにノーツスコア+15%'{% if mitama5=='7秒ごとに63%の確率で6.3秒間ノーツスコア+15%、BRILLIANTならさらにノーツスコア+15%' %} selected {% endif %}>7秒ごとに63%の確率で6.3秒間ノーツスコア+15%、BRILLIANTならさらにノーツスコア+15%</option>
+                        <option value='6秒ごとに62%の確率で5.4秒間ノーツスコア+15%、BRILLIANTならさらにノーツスコア+15%'{% if mitama5=='6秒ごとに62%の確率で5.4秒間ノーツスコア+15%、BRILLIANTならさらにノーツスコア+15%' %} selected {% endif %}>6秒ごとに62%の確率で5.4秒間ノーツスコア+15%、BRILLIANTならさらにノーツスコア+15%</option>
+                        <option value='8秒ごとに63%の確率で7.2秒間ノーツスコア+15%、100コンボ以上の時はさらにノーツスコア+15%'{% if mitama5=='8秒ごとに63%の確率で7.2秒間ノーツスコア+15%、100コンボ以上の時はさらにノーツスコア+15%' %} selected {% endif %}>8秒ごとに63%の確率で7.2秒間ノーツスコア+15%、100コンボ以上の時はさらにノーツスコア+15%</option>
+                        <option value='7秒ごとに63%の確率で6.3秒間ノーツスコア+15%、100コンボ以上の時はさらにノーツスコア+15%'{% if mitama5=='7秒ごとに63%の確率で6.3秒間ノーツスコア+15%、100コンボ以上の時はさらにノーツスコア+15%' %} selected {% endif %}>7秒ごとに63%の確率で6.3秒間ノーツスコア+15%、100コンボ以上の時はさらにノーツスコア+15%</option>
+                        <option value='6秒ごとに62%の確率で5.4秒間ノーツスコア+15%、100コンボ以上の時はさらにノーツスコア+15%'{% if mitama5=='6秒ごとに62%の確率で5.4秒間ノーツスコア+15%、100コンボ以上の時はさらにノーツスコア+15%' %} selected {% endif %}>6秒ごとに62%の確率で5.4秒間ノーツスコア+15%、100コンボ以上の時はさらにノーツスコア+15%</option>
+                        <option value='8秒ごとに63%の確率で7.2秒間ノーツスコア+20%'{% if mitama5=='8秒ごとに63%の確率で7.2秒間ノーツスコア+20%' %} selected {% endif %}>8秒ごとに63%の確率で7.2秒間ノーツスコア+20%</option>
+                        <option value='7秒ごとに63%の確率で6.3秒間ノーツスコア+20%'{% if mitama5=='7秒ごとに63%の確率で6.3秒間ノーツスコア+20%' %} selected {% endif %}>7秒ごとに63%の確率で6.3秒間ノーツスコア+20%</option>
+                        <option value='6秒ごとに62%の確率で5.4秒間ノーツスコア+20%'{% if mitama5=='6秒ごとに62%の確率で5.4秒間ノーツスコア+20%' %} selected {% endif %}>6秒ごとに62%の確率で5.4秒間ノーツスコア+20%</option>
+                    </optgroup>
+                    <option value='効果なし2'{% if mitama5=='効果なし2' %} selected {% endif %}>その他(スコアアップ以外)</option>
+                </select>
+            </div>
+        <!--ミタマバーストリンク-->
+        <div>
+            <p class="panel">ミタマバーストリンク（スコアアップ関連効果のみ対応）</p>
+            <div>ミタマ1：
+            <select name="burstlink1">
+                <option value='効果なし'>ミタマバーストリンクの効果を選択</option>
+                <optgroup label="SSR">
+                    <option value='一定時間ノーツスコア+70%'{% if burstlink1=='一定時間ノーツスコア+70%' %} selected {% endif %}>一定時間ノーツスコア+70%(Lv3)</option>
+                    <option value='一定時間ノーツスコア+65%'{% if burstlink1=='一定時間ノーツスコア+65%' %} selected {% endif %}>一定時間ノーツスコア+65%(Lv2)</option>
+                    <option value='一定時間ノーツスコア+60%'{% if burstlink1=='一定時間ノーツスコア+60%' %} selected {% endif %}>一定時間ノーツスコア+60%(Lv1)</option>
+                </optgroup>
+                <optgroup label="SR">
+                    <option value='一定時間ノーツスコア+50%'{% if burstlink1=='一定時間ノーツスコア+50%' %} selected {% endif %}>一定時間ノーツスコア+50%(Lv3)</option>
+                    <option value='一定時間ノーツスコア+45%'{% if burstlink1=='一定時間ノーツスコア+45%' %} selected {% endif %}>一定時間ノーツスコア+45%(Lv2)</option>
+                    <option value='一定時間ノーツスコア+40%'{% if burstlink1=='一定時間ノーツスコア+40%' %} selected {% endif %}>一定時間ノーツスコア+40%(Lv1)</option>
+                </optgroup>
+                <option value='効果なし2'{% if burstlink1=='効果なし2' %} selected {% endif %}>その他(スコアアップ以外)</option>
+            </select>
+            <div>ミタマ2：
+            <select name="burstlink2">
+                <option value='効果なし'>ミタマバーストリンクの効果を選択</option>
+                <optgroup label="SSR">
+                    <option value='一定時間ノーツスコア+70%'{% if burstlink2=='一定時間ノーツスコア+70%' %} selected {% endif %}>一定時間ノーツスコア+70%(Lv3)</option>
+                    <option value='一定時間ノーツスコア+65%'{% if burstlink2=='一定時間ノーツスコア+65%' %} selected {% endif %}>一定時間ノーツスコア+65%(Lv2)</option>
+                    <option value='一定時間ノーツスコア+60%'{% if burstlink2=='一定時間ノーツスコア+60%' %} selected {% endif %}>一定時間ノーツスコア+60%(Lv1)</option>
+                </optgroup>
+                <optgroup label="SR">
+                    <option value='一定時間ノーツスコア+50%'{% if burstlink2=='一定時間ノーツスコア+50%' %} selected {% endif %}>一定時間ノーツスコア+50%(Lv3)</option>
+                    <option value='一定時間ノーツスコア+45%'{% if burstlink2=='一定時間ノーツスコア+45%' %} selected {% endif %}>一定時間ノーツスコア+45%(Lv2)</option>
+                    <option value='一定時間ノーツスコア+40%'{% if burstlink2=='一定時間ノーツスコア+40%' %} selected {% endif %}>一定時間ノーツスコア+40%(Lv1)</option>
+                </optgroup>
+                <option value='効果なし2'{% if burstlink2=='効果なし2' %} selected {% endif %}>その他(スコアアップ以外)</option>
+            </select>
+            <div>ミタマ3：
+            <select name="burstlink3">
+                <option value='効果なし'>ミタマバーストリンクの効果を選択</option>
+                <optgroup label="SSR">
+                    <option value='一定時間ノーツスコア+70%'{% if burstlink3=='一定時間ノーツスコア+70%' %} selected {% endif %}>一定時間ノーツスコア+70%(Lv3)</option>
+                    <option value='一定時間ノーツスコア+65%'{% if burstlink3=='一定時間ノーツスコア+65%' %} selected {% endif %}>一定時間ノーツスコア+65%(Lv2)</option>
+                    <option value='一定時間ノーツスコア+60%'{% if burstlink3=='一定時間ノーツスコア+60%' %} selected {% endif %}>一定時間ノーツスコア+60%(Lv1)</option>
+                </optgroup>
+                <optgroup label="SR">
+                    <option value='一定時間ノーツスコア+50%'{% if burstlink3=='一定時間ノーツスコア+50%' %} selected {% endif %}>一定時間ノーツスコア+50%(Lv3)</option>
+                    <option value='一定時間ノーツスコア+45%'{% if burstlink3=='一定時間ノーツスコア+45%' %} selected {% endif %}>一定時間ノーツスコア+45%(Lv2)</option>
+                    <option value='一定時間ノーツスコア+40%'{% if burstlink3=='一定時間ノーツスコア+40%' %} selected {% endif %}>一定時間ノーツスコア+40%(Lv1)</option>
+                </optgroup>
+                <option value='効果なし2'{% if burstlink3=='効果なし2' %} selected {% endif %}>その他(スコアアップ以外)</option>
+            </select>
+            <div>ミタマ4：
+            <select name="burstlink4">
+                <option value='効果なし'>ミタマバーストリンクの効果を選択</option>
+                <optgroup label="SSR">
+                    <option value='一定時間ノーツスコア+70%'{% if burstlink4=='一定時間ノーツスコア+70%' %} selected {% endif %}>一定時間ノーツスコア+70%(Lv3)</option>
+                    <option value='一定時間ノーツスコア+65%'{% if burstlink4=='一定時間ノーツスコア+65%' %} selected {% endif %}>一定時間ノーツスコア+65%(Lv2)</option>
+                    <option value='一定時間ノーツスコア+60%'{% if burstlink4=='一定時間ノーツスコア+60%' %} selected {% endif %}>一定時間ノーツスコア+60%(Lv1)</option>
+                </optgroup>
+                <optgroup label="SR">
+                    <option value='一定時間ノーツスコア+50%'{% if burstlink4=='一定時間ノーツスコア+50%' %} selected {% endif %}>一定時間ノーツスコア+50%(Lv3)</option>
+                    <option value='一定時間ノーツスコア+45%'{% if burstlink4=='一定時間ノーツスコア+45%' %} selected {% endif %}>一定時間ノーツスコア+45%(Lv2)</option>
+                    <option value='一定時間ノーツスコア+40%'{% if burstlink4=='一定時間ノーツスコア+40%' %} selected {% endif %}>一定時間ノーツスコア+40%(Lv1)</option>
+                </optgroup>
+                <option value='効果なし2'{% if burstlink4=='効果なし2' %} selected {% endif %}>その他(スコアアップ以外)</option>
+            </select>
+            <div>ミタマ5：
+            <select name="burstlink5">
+                <option value='効果なし'>ミタマバーストリンクの効果を選択</option>
+                <optgroup label="SSR">
+                    <option value='一定時間ノーツスコア+70%'{% if burstlink5=='一定時間ノーツスコア+70%' %} selected {% endif %}>一定時間ノーツスコア+70%(Lv3)</option>
+                    <option value='一定時間ノーツスコア+65%'{% if burstlink5=='一定時間ノーツスコア+65%' %} selected {% endif %}>一定時間ノーツスコア+65%(Lv2)</option>
+                    <option value='一定時間ノーツスコア+60%'{% if burstlink5=='一定時間ノーツスコア+60%' %} selected {% endif %}>一定時間ノーツスコア+60%(Lv1)</option>
+                </optgroup>
+                <optgroup label="SR">
+                    <option value='一定時間ノーツスコア+50%'{% if burstlink5=='一定時間ノーツスコア+50%' %} selected {% endif %}>一定時間ノーツスコア+50%(Lv3)</option>
+                    <option value='一定時間ノーツスコア+45%'{% if burstlink5=='一定時間ノーツスコア+45%' %} selected {% endif %}>一定時間ノーツスコア+45%(Lv2)</option>
+                    <option value='一定時間ノーツスコア+40%'{% if burstlink5=='一定時間ノーツスコア+40%' %} selected {% endif %}>一定時間ノーツスコア+40%(Lv1)</option>
+                </optgroup>
+                <option value='効果なし2'{% if burstlink5=='効果なし2' %} selected {% endif %}>その他(スコアアップ以外)</option>
+            </select>
+        </div>
+        </div>
+        <!--計算-->
+        <div id = "button">
+            <button type="submit">計算</button>
+        </div>
+    </form> 
+
+    <!--出力結果-->
+    <form method="post" action="{{ url_for('index') }}"></form>
+        <div id="down"></div>
+        <div id="border">
+            <p>出力結果</p>
+            <p>理論値スコア: {{score}}</p>
+            <p>最適ミタマバースト位置: {{combo}}コンボ目</p>
+            <!--発動記録の表示-->
+            <details>
+                <summary>理論値でのカグラエフェクトの発動記録（クリックすると表示されます）</summary>
+                {% if table!=[] %}
+                    <a href="javascript:void(0)" onclick="onCSVDownload(this, document.querySelector('.dataframe'), 'result.csv');">発動記録をCSVファイルでダウンロード</a>
+                {% endif %}
+                <script>
+                // テーブルデータのCSVダウンロード
+                function onCSVDownload(a, table, filename) {
+                    var escaped = /,|\r?\n|\r|"/;
+                    var e = /"/g;
+
+                    // データ作成
+                    var bom = new Uint8Array([0xEF, 0xBB, 0xBF]); // UTF-8BOMあり
+                    var csv = [], row = [], field, r, c;
+                    for (r=0;  r<table.rows.length; r++) {
+                        row.length = 0;
+                        for (c=0; c<table.rows[r].cells.length; c++) {
+                            field = table.rows[r].cells[c].textContent;
+                            row.push(escaped.test(field)? '"'+field.replace(e, '""')+'"': field);
+                            // 区切り、改行、エスケープ文字を含む場合、エスケープ文字文字で囲む（エスケープ文字は二重にする）
+                        }
+                        csv.push(row.join(','));
+                    }
+                    //var blob = new Blob([/*bom, */csv.join('\n')], {'type': 'text/csv'}); // BOMなし
+                    var blob = new Blob([bom, csv.join('\n')], {'type': 'text/csv'});
+
+                    // 保存
+                    if (window.navigator.msSaveBlob) {
+                        // IE用(保存 or 開く保存)
+                        window.navigator.msSaveBlob(blob, filename); 
+                        //window.navigator.msSaveOrOpenBlob(blob, filename);
+                    } else {
+                        a.download = filename;
+                        a.href = window.URL.createObjectURL(blob);
+                    }
+                }
+
+                </script>
+                {% if table!=[] %}
+                    {{table|safe}}
+                {% endif %}
+            </details>
+        </div>
+    </form>
+      
+    <!--注意書きなど-->
+    <div id="down"></div>
+    <div id="border">
+        <p>シミュレータの開発者@Nijiki_dankagu(不具合、問題等あればこちらまでご連絡ください)</p>
+        <p>※理論値は全てのカグラエフェクトが確実に発動した場合を含め、擬似的にオートで100回分プレイした結果から出力されます。そのため、全てのカグラエフェクトが確実に発動した場合が理論値でない曲では出力結果が変動する可能性があります。あらかじめご了承ください。</p>
+        <p>※理論値はオートによる判定で計算しているため、実際のプレイではタップのタイミングによって結果と違う値が出る可能性があります</p>
+        <a href="https://danmakuwiki.com/">東方ダンマクカグラ有志攻略Wikiトップに移動する</a>
+        <p>更新日:2022年10月14日</p>
+    </div>
+ 
+      
+</body>
+</html>

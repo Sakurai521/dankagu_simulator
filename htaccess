@@ -1,0 +1,9 @@
+SetEnvIf Request_URI "." Ngx_Cache_NoCacheMode=off SetEnvIf Request_URI "." Ngx_Cache_StaticMode
+
+RewriteEngine On
+
+RewriteCond %{HTTPS} !on
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(.*)$ /index.cgi/$1 [QSA,L]
